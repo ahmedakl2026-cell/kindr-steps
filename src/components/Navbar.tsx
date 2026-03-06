@@ -102,12 +102,21 @@ const Navbar = () => {
               {link.label}
             </Link>
           ))}
-          <Link to="/login" onClick={() => setIsOpen(false)}>
-            <Button variant="outline" className="w-full mt-2 rounded-xl">
-              تسجيل الدخول
+          <div className="flex items-center gap-2 mt-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleTheme}
+              className="rounded-xl"
+            >
+              {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </Button>
-          </Link>
-        </div>
+            <Link to="/login" onClick={() => setIsOpen(false)} className="flex-1">
+              <Button variant="outline" className="w-full rounded-xl">
+                تسجيل الدخول
+              </Button>
+            </Link>
+          </div>
       )}
     </nav>
   );
