@@ -29,6 +29,7 @@ const App = () => (
           <Route path="/parent-dashboard" element={<ParentDashboard />} />
           <Route path="/community" element={<Community />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/team" element={<Team />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
