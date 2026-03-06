@@ -11,6 +11,7 @@ import ParentDashboard from "./pages/ParentDashboard";
 import Community from "./pages/Community";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
+import Team from "./pages/Team";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/parent-dashboard" element={<ParentDashboard />} />
           <Route path="/community" element={<Community />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/team" element={<Team />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
