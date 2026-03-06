@@ -10,6 +10,7 @@ const navLinks = [
   { label: "المتخصصون", path: "/specialists" },
   { label: "لوحة الأهل", path: "/parent-dashboard" },
   { label: "مجتمع الدعم", path: "/community" },
+  { label: "فريق العمل", path: "/team" },
 ];
 
 const Navbar = () => {

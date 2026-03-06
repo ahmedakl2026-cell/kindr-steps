@@ -11,6 +11,7 @@ import ParentDashboard from "./pages/ParentDashboard";
 import Community from "./pages/Community";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
+import Team from "./pages/Team";
 
 const queryClient = new QueryClient();
 
