@@ -1,21 +1,24 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Star, Moon, Sun } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Menu, X, Star, Moon, Sun, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
 
 const navLinks = [
   { label: "الرئيسية", path: "/" },
   { label: "ركن الأطفال", path: "/kids" },
   { label: "مكتبة الإعاقات", path: "/library" },
   { label: "المتخصصون", path: "/specialists" },
-  { label: "لوحة الأهل", path: "/parent-dashboard" },
-  { label: "مجتمع الدعم", path: "/community" },
+  { label: "لوحة الأهل", path: "/parent-dashboard", requireAuth: true },
+  { label: "مجتمع الدعم", path: "/community", requireAuth: true },
   { label: "فريق العمل", path: "/team" },
 ];
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, profile, signOut } = useAuth();
   const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains("dark"));
 
   const toggleTheme = () => {
@@ -33,6 +36,13 @@ const Navbar = () => {
     }
   }, []);
 
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/");
+  };
+
+  const visibleLinks = navLinks.filter((link) => !link.requireAuth || user);
+
   return (
     <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
@@ -45,7 +55,7 @@ const Navbar = () => {
 
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-1">
-          {navLinks.map((link) => (
+          {visibleLinks.map((link) => (
             <Link
               key={link.path}
               to={link.path}
@@ -61,26 +71,26 @@ const Navbar = () => {
         </div>
 
         <div className="hidden md:flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleTheme}
-            className="rounded-xl"
-          >
+          <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-xl">
             {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
           </Button>
-          <Link to="/login">
-            <Button variant="outline" className="btn-bounce rounded-xl">
-              تسجيل الدخول
-            </Button>
-          </Link>
+          {user ? (
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-muted-foreground">{profile?.full_name}</span>
+              <Button variant="outline" className="rounded-xl gap-2" onClick={handleSignOut}>
+                <LogOut className="w-4 h-4" />
+                خروج
+              </Button>
+            </div>
+          ) : (
+            <Link to="/login">
+              <Button variant="outline" className="btn-bounce rounded-xl">تسجيل الدخول</Button>
+            </Link>
+          )}
         </div>
 
         {/* Mobile menu button */}
-        <button
-          className="md:hidden p-2 rounded-lg hover:bg-muted"
-          onClick={() => setIsOpen(!isOpen)}
-        >
+        <button className="md:hidden p-2 rounded-lg hover:bg-muted" onClick={() => setIsOpen(!isOpen)}>
           {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </div>
@@ -88,7 +98,7 @@ const Navbar = () => {
       {/* Mobile nav */}
       {isOpen && (
         <div className="md:hidden border-t border-border bg-background px-4 py-4 space-y-2">
-          {navLinks.map((link) => (
+          {visibleLinks.map((link) => (
             <Link
               key={link.path}
               to={link.path}
@@ -103,19 +113,19 @@ const Navbar = () => {
             </Link>
           ))}
           <div className="flex items-center gap-2 mt-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleTheme}
-              className="rounded-xl"
-            >
+            <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-xl">
               {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </Button>
-            <Link to="/login" onClick={() => setIsOpen(false)} className="flex-1">
-              <Button variant="outline" className="w-full rounded-xl">
-                تسجيل الدخول
+            {user ? (
+              <Button variant="outline" className="flex-1 rounded-xl gap-2" onClick={() => { handleSignOut(); setIsOpen(false); }}>
+                <LogOut className="w-4 h-4" />
+                خروج
               </Button>
-            </Link>
+            ) : (
+              <Link to="/login" onClick={() => setIsOpen(false)} className="flex-1">
+                <Button variant="outline" className="w-full rounded-xl">تسجيل الدخول</Button>
+              </Link>
+            )}
           </div>
         </div>
       )}
