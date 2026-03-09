@@ -35,7 +35,7 @@ const Footer = () => (
         <p className="text-sm text-muted-foreground flex items-center justify-center gap-1">
           صُنع بـ <Heart className="w-4 h-4 text-destructive" /> لكل طفل مميز
         </p>
-        <p className="text-xs text-muted-foreground mt-1">⚠️ هذا مشروع تعليمي تجريبي ولا يقدم خدمات طبية فعلية</p>
+        <p className="text-xs text-muted-foreground mt-1">المنصة لا تقدم خدمات طبية - يرجى استشارة الطبيب المختص</p>
       </div>
     </div>
   </footer>
