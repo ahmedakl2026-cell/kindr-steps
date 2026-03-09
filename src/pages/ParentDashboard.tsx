@@ -1,20 +1,21 @@
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
-import { TrendingUp, Award, Lightbulb, MessageSquare, User } from "lucide-react";
+import { TrendingUp, Award, Lightbulb, MessageSquare, User, Plus, Baby, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
-const progressData = [
-  { day: "السبت", points: 20 },
-  { day: "الأحد", points: 35 },
-  { day: "الاثنين", points: 15 },
-  { day: "الثلاثاء", points: 40 },
-  { day: "الأربعاء", points: 25 },
-  { day: "الخميس", points: 50 },
-  { day: "الجمعة", points: 30 },
-];
+interface Child {
+  id: string;
+  name: string;
+  birth_date: string | null;
+  condition: string;
+  notes: string | null;
+}
 
 const tips = [
   "خصص 15 دقيقة يومياً للعب مع طفلك ألعاب تعليمية",
@@ -31,13 +32,82 @@ const suggestedActivities = [
 ];
 
 const ParentDashboard = () => {
-  const [question, setQuestion] = useState("");
+  const { user, profile, role, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
+  const [children, setChildren] = useState<Child[]>([]);
+  const [showAddChild, setShowAddChild] = useState(false);
+  const [childName, setChildName] = useState("");
+  const [childBirthDate, setChildBirthDate] = useState("");
+  const [childCondition, setChildCondition] = useState<string>("adhd");
+  const [childNotes, setChildNotes] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSendQuestion = () => {
-    if (!question.trim()) return;
-    toast.success("تم إرسال سؤالك بنجاح! (نموذج تجريبي)");
-    setQuestion("");
+  useEffect(() => {
+    if (!authLoading && !user) navigate("/login");
+  }, [authLoading, user, navigate]);
+
+  useEffect(() => {
+    if (!user) return;
+    const fetchChildren = async () => {
+      const { data, error } = await supabase
+        .from("children")
+        .select("*")
+        .eq("parent_id", user.id)
+        .order("created_at");
+      if (!error) setChildren(data || []);
+      setLoading(false);
+    };
+    fetchChildren();
+  }, [user]);
+
+  const handleAddChild = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) return;
+    setSubmitting(true);
+    const { error } = await supabase.from("children").insert({
+      parent_id: user.id,
+      name: childName,
+      birth_date: childBirthDate || null,
+      condition: childCondition as any,
+      notes: childNotes || null,
+    });
+    if (error) {
+      toast.error("خطأ في إضافة الطفل");
+    } else {
+      toast.success("تمت إضافة بيانات الطفل!");
+      setChildName("");
+      setChildBirthDate("");
+      setChildNotes("");
+      setShowAddChild(false);
+      // Refresh
+      const { data } = await supabase.from("children").select("*").eq("parent_id", user.id).order("created_at");
+      setChildren(data || []);
+    }
+    setSubmitting(false);
   };
+
+  const handleDeleteChild = async (id: string) => {
+    const { error } = await supabase.from("children").delete().eq("id", id);
+    if (!error) {
+      setChildren(children.filter((c) => c.id !== id));
+      toast.success("تم حذف بيانات الطفل");
+    }
+  };
+
+  const conditionLabel = (c: string) => {
+    switch (c) {
+      case "adhd": return "اضطراب فرط الحركة وتشتت الانتباه";
+      case "down_syndrome": return "متلازمة داون";
+      default: return c;
+    }
+  };
+
+  const conditionEmoji = (c: string) => (c === "adhd" ? "⚡" : "💛");
+
+  if (authLoading || loading) {
+    return <Layout><div className="flex items-center justify-center min-h-[60vh] text-muted-foreground">جاري التحميل...</div></Layout>;
+  }
 
   return (
     <Layout>
@@ -47,49 +117,102 @@ const ParentDashboard = () => {
             <User className="w-7 h-7 text-primary" />
           </div>
           <div>
-            <h1 className="text-2xl md:text-3xl font-extrabold">مرحباً، أم أحمد 👋</h1>
+            <h1 className="text-2xl md:text-3xl font-extrabold">مرحباً، {profile?.full_name || "ولي الأمر"} 👋</h1>
             <p className="text-muted-foreground">لوحة تحكم ولي الأمر</p>
           </div>
         </div>
 
-        {/* Child card */}
-        <div className="bg-gradient-warm rounded-3xl p-6 md:p-8 mb-8">
-          <div className="flex flex-wrap items-center gap-6">
-            <div className="w-16 h-16 rounded-2xl bg-card flex items-center justify-center text-3xl">👦</div>
-            <div>
-              <h2 className="text-xl font-bold">أحمد</h2>
-              <p className="text-muted-foreground text-sm">7 سنوات • اضطراب طيف التوحد</p>
+        {/* Children */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Baby className="w-5 h-5 text-primary" />
+              <h2 className="text-lg font-bold">أطفالي</h2>
             </div>
-            <div className="flex gap-4 mr-auto">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-primary">215</div>
-                <div className="text-xs text-muted-foreground">نقطة</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-secondary">12</div>
-                <div className="text-xs text-muted-foreground">لعبة مكتملة</div>
-              </div>
-            </div>
+            <Button variant="outline" className="rounded-xl gap-2" onClick={() => setShowAddChild(true)}>
+              <Plus className="w-4 h-4" />
+              إضافة طفل
+            </Button>
           </div>
+
+          {children.length === 0 ? (
+            <div className="p-8 rounded-2xl border border-dashed border-border bg-muted/30 text-center">
+              <Baby className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+              <p className="text-muted-foreground">لم تضف أي أطفال بعد</p>
+              <Button className="mt-4 rounded-xl" onClick={() => setShowAddChild(true)}>إضافة طفل</Button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {children.map((child) => (
+                <div key={child.id} className="bg-gradient-warm rounded-2xl p-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-3">
+                      <span className="text-3xl">{conditionEmoji(child.condition)}</span>
+                      <div>
+                        <h3 className="text-xl font-bold">{child.name}</h3>
+                        <p className="text-sm text-muted-foreground">{conditionLabel(child.condition)}</p>
+                      </div>
+                    </div>
+                    <button onClick={() => handleDeleteChild(child.id)} className="text-muted-foreground hover:text-destructive">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                  {child.birth_date && (
+                    <p className="text-xs text-muted-foreground mt-1">تاريخ الميلاد: {child.birth_date}</p>
+                  )}
+                  {child.notes && (
+                    <p className="text-sm text-muted-foreground mt-2 bg-card/50 rounded-xl p-3">{child.notes}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Progress chart */}
-          <div className="lg:col-span-2 p-6 rounded-2xl border border-border bg-card">
-            <div className="flex items-center gap-2 mb-6">
-              <TrendingUp className="w-5 h-5 text-primary" />
-              <h3 className="text-lg font-bold">تقدم الأسبوع</h3>
+        {/* Add child modal */}
+        {showAddChild && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/30 backdrop-blur-sm p-4">
+            <div className="bg-card rounded-3xl p-8 max-w-md w-full shadow-2xl">
+              <h3 className="text-xl font-bold mb-6">إضافة طفل</h3>
+              <form onSubmit={handleAddChild} className="space-y-4">
+                <Input placeholder="اسم الطفل" value={childName} onChange={(e) => setChildName(e.target.value)} required className="rounded-xl" />
+                <Input type="date" value={childBirthDate} onChange={(e) => setChildBirthDate(e.target.value)} className="rounded-xl" />
+                <div>
+                  <p className="text-sm font-medium mb-2">نوع الحالة:</p>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setChildCondition("adhd")}
+                      className={`flex-1 py-2 rounded-xl text-sm font-medium border transition-colors ${
+                        childCondition === "adhd" ? "bg-primary text-primary-foreground border-primary" : "bg-muted text-muted-foreground border-border"
+                      }`}
+                    >
+                      ⚡ فرط الحركة
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setChildCondition("down_syndrome")}
+                      className={`flex-1 py-2 rounded-xl text-sm font-medium border transition-colors ${
+                        childCondition === "down_syndrome" ? "bg-primary text-primary-foreground border-primary" : "bg-muted text-muted-foreground border-border"
+                      }`}
+                    >
+                      💛 متلازمة داون
+                    </button>
+                  </div>
+                </div>
+                <Textarea placeholder="ملاحظات عن حالة الطفل..." value={childNotes} onChange={(e) => setChildNotes(e.target.value)} className="rounded-xl" rows={3} />
+                <div className="flex gap-3">
+                  <Button type="submit" className="flex-1 rounded-xl btn-bounce" disabled={submitting}>
+                    {submitting ? "جاري الإضافة..." : "إضافة الطفل"}
+                  </Button>
+                  <Button type="button" variant="outline" className="rounded-xl" onClick={() => setShowAddChild(false)}>إلغاء</Button>
+                </div>
+              </form>
             </div>
-            <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={progressData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="day" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} />
-                <Bar dataKey="points" fill="hsl(var(--primary))" radius={[8, 8, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
           </div>
+        )}
 
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Daily tips */}
           <div className="p-6 rounded-2xl border border-border bg-card">
             <div className="flex items-center gap-2 mb-4">
@@ -105,42 +228,23 @@ const ParentDashboard = () => {
               ))}
             </ul>
           </div>
-        </div>
 
-        {/* Suggested activities */}
-        <div className="mt-8">
-          <div className="flex items-center gap-2 mb-4">
-            <Award className="w-5 h-5 text-secondary" />
-            <h3 className="text-lg font-bold">أنشطة مقترحة لهذا الأسبوع</h3>
+          {/* Suggested activities */}
+          <div className="p-6 rounded-2xl border border-border bg-card">
+            <div className="flex items-center gap-2 mb-4">
+              <Award className="w-5 h-5 text-secondary" />
+              <h3 className="text-lg font-bold">أنشطة مقترحة</h3>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              {suggestedActivities.map((a) => (
+                <div key={a.title} className="p-3 rounded-xl border border-border text-center">
+                  <div className="text-2xl mb-1">{a.emoji}</div>
+                  <h4 className="font-bold text-xs mb-1">{a.title}</h4>
+                  <span className="text-xs text-muted-foreground">{a.time}</span>
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {suggestedActivities.map((a) => (
-              <div key={a.title} className="p-4 rounded-2xl border border-border bg-card text-center card-hover">
-                <div className="text-3xl mb-2">{a.emoji}</div>
-                <h4 className="font-bold text-sm mb-1">{a.title}</h4>
-                <span className="text-xs text-muted-foreground">{a.time}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Ask a question */}
-        <div className="mt-8 p-6 rounded-2xl border border-border bg-card">
-          <div className="flex items-center gap-2 mb-4">
-            <MessageSquare className="w-5 h-5 text-primary" />
-            <h3 className="text-lg font-bold">اسأل متخصصاً</h3>
-          </div>
-          <Textarea
-            placeholder="اكتب سؤالك هنا..."
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            className="rounded-xl mb-3"
-            rows={3}
-          />
-          <Button className="rounded-xl btn-bounce" onClick={handleSendQuestion}>
-            إرسال السؤال
-          </Button>
-          <p className="text-xs text-muted-foreground mt-2">⚠️ نموذج تجريبي - لا يتم إرسال الأسئلة فعلياً</p>
         </div>
       </div>
     </Layout>
