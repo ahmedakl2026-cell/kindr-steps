@@ -14,6 +14,7 @@ import Login from "./pages/Login";
 import SetupRole from "./pages/SetupRole";
 import NotFound from "./pages/NotFound";
 import Team from "./pages/Team";
+import AdminDashboard from "./pages/AdminDashboard";
 
 const queryClient = new QueryClient();
 
