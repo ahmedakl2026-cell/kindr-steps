@@ -22,7 +22,8 @@ interface Specialist {
 const specialtyFilters = ["الكل", "نطق وتخاطب", "علاج وظيفي", "سلوك", "نفسي أطفال", "تعليم خاص"];
 
 const Specialists = () => {
-  const { user } = useAuth();
+  const { user, role } = useAuth();
+  const navigate = useNavigate();
   const [specialists, setSpecialists] = useState<Specialist[]>([]);
   const [filter, setFilter] = useState("الكل");
   const [bookingFor, setBookingFor] = useState<string | null>(null);
