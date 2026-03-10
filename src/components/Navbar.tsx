@@ -11,6 +11,7 @@ const navLinks = [
   { label: "المتخصصون", path: "/specialists" },
   { label: "لوحة الأهل", path: "/parent-dashboard", requireAuth: true },
   { label: "مجتمع الدعم", path: "/community", requireAuth: true },
+  { label: "لوحة الإدارة", path: "/admin", requireAuth: true, requireRole: "admin" as const },
   { label: "فريق العمل", path: "/team" },
 ];
 
@@ -18,7 +19,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, profile, signOut } = useAuth();
+  const { user, profile, role, signOut } = useAuth();
   const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains("dark"));
 
   const toggleTheme = () => {
@@ -41,7 +42,11 @@ const Navbar = () => {
     navigate("/");
   };
 
-  const visibleLinks = navLinks.filter((link) => !link.requireAuth || user);
+  const visibleLinks = navLinks.filter((link) => {
+    if (link.requireAuth && !user) return false;
+    if ((link as any).requireRole && (link as any).requireRole !== role) return false;
+    return true;
+  });
 
   return (
     <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">

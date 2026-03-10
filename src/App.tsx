@@ -14,6 +14,7 @@ import Login from "./pages/Login";
 import SetupRole from "./pages/SetupRole";
 import NotFound from "./pages/NotFound";
 import Team from "./pages/Team";
+import AdminDashboard from "./pages/AdminDashboard";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="/community" element={<Community />} />
             <Route path="/login" element={<Login />} />
             <Route path="/setup-role" element={<SetupRole />} />
+            <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/team" element={<Team />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

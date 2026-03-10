@@ -11,17 +11,36 @@ import { useAuth } from "@/contexts/AuthContext";
 const SetupRole = () => {
   const { user, role, loading } = useAuth();
   const navigate = useNavigate();
-  const [accountType, setAccountType] = useState<"parent" | "specialist">("parent");
+  const [accountType, setAccountType] = useState<"parent" | "specialist" | "admin">("parent");
   const [specialty, setSpecialty] = useState("");
   const [bio, setBio] = useState("");
   const [experienceYears, setExperienceYears] = useState("");
   const [conditions, setConditions] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
+  const [isInvitedAdmin, setIsInvitedAdmin] = useState(false);
+  const [isInvitedSpecialist, setIsInvitedSpecialist] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) navigate("/login");
     if (!loading && role) navigate("/");
   }, [loading, user, role, navigate]);
+
+  // Check if user has an invitation
+  useEffect(() => {
+    if (user?.email) {
+      // Try setup as admin to check - we use a direct approach
+      // Query won't work due to RLS, so we attempt the role setup
+      // Instead, let's try calling setup_user_role with admin and see if it works
+      // Better: just attempt and catch error
+      const checkAdmin = async () => {
+        // We can't query invited_users (RLS), so we infer from setup attempt
+        // Simple approach: show admin option and let setup_user_role handle validation
+        setIsInvitedAdmin(true); // Show option, server will validate
+        setIsInvitedSpecialist(true);
+      };
+      checkAdmin();
+    }
+  }, [user]);
 
   const handleSetup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,7 +91,7 @@ const SetupRole = () => {
           </div>
 
           <form onSubmit={handleSetup} className="space-y-4 bg-card p-8 rounded-3xl border border-border">
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               <button
                 type="button"
                 onClick={() => setAccountType("parent")}
@@ -95,6 +114,19 @@ const SetupRole = () => {
               >
                 👨‍⚕️ متخصص
               </button>
+              {isInvitedAdmin && (
+                <button
+                  type="button"
+                  onClick={() => setAccountType("admin")}
+                  className={`flex-1 py-3 rounded-xl text-sm font-medium transition-colors border ${
+                    accountType === "admin"
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-muted text-muted-foreground border-border"
+                  }`}
+                >
+                  🛡️ مدير
+                </button>
+              )}
             </div>
 
             {accountType === "specialist" && (
