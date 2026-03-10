@@ -91,7 +91,7 @@ const SetupRole = () => {
           </div>
 
           <form onSubmit={handleSetup} className="space-y-4 bg-card p-8 rounded-3xl border border-border">
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               <button
                 type="button"
                 onClick={() => setAccountType("parent")}
@@ -114,6 +114,19 @@ const SetupRole = () => {
               >
                 👨‍⚕️ متخصص
               </button>
+              {isInvitedAdmin && (
+                <button
+                  type="button"
+                  onClick={() => setAccountType("admin")}
+                  className={`flex-1 py-3 rounded-xl text-sm font-medium transition-colors border ${
+                    accountType === "admin"
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-muted text-muted-foreground border-border"
+                  }`}
+                >
+                  🛡️ مدير
+                </button>
+              )}
             </div>
 
             {accountType === "specialist" && (
