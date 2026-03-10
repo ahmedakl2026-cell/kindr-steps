@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Users, Calendar, CheckCircle, Star } from "lucide-react";
+import { Users, Calendar, CheckCircle, Star, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -21,7 +22,8 @@ interface Specialist {
 const specialtyFilters = ["الكل", "نطق وتخاطب", "علاج وظيفي", "سلوك", "نفسي أطفال", "تعليم خاص"];
 
 const Specialists = () => {
-  const { user } = useAuth();
+  const { user, role } = useAuth();
+  const navigate = useNavigate();
   const [specialists, setSpecialists] = useState<Specialist[]>([]);
   const [filter, setFilter] = useState("الكل");
   const [bookingFor, setBookingFor] = useState<string | null>(null);
@@ -132,14 +134,27 @@ const Specialists = () => {
                 <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
                   {s.experience_years && <span>خبرة {s.experience_years} سنوات</span>}
                 </div>
-                <Button
-                  variant="outline"
-                  className="w-full rounded-xl btn-bounce"
-                  onClick={() => user ? setBookingFor(s.id) : toast.error("يرجى تسجيل الدخول أولاً")}
-                >
-                  <Calendar className="w-4 h-4 ml-2" />
-                  احجز استشارة
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    className="flex-1 rounded-xl btn-bounce"
+                    onClick={() => user ? setBookingFor(s.id) : toast.error("يرجى تسجيل الدخول أولاً")}
+                  >
+                    <Calendar className="w-4 h-4 ml-2" />
+                    احجز استشارة
+                  </Button>
+                  {user && role === "parent" && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="rounded-xl"
+                      onClick={() => navigate(`/messages?specialist=${s.user_id}`)}
+                      title="راسل"
+                    >
+                      <MessageCircle className="w-4 h-4" />
+                    </Button>
+                  )}
+                </div>
               </div>
             ))}
           </div>

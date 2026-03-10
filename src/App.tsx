@@ -15,6 +15,7 @@ import SetupRole from "./pages/SetupRole";
 import NotFound from "./pages/NotFound";
 import Team from "./pages/Team";
 import AdminDashboard from "./pages/AdminDashboard";
+import Messages from "./pages/Messages";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/setup-role" element={<SetupRole />} />
             <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/messages" element={<Messages />} />
             <Route path="/team" element={<Team />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
