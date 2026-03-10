@@ -18,10 +18,22 @@ const SetupRole = () => {
   const [conditions, setConditions] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
 
+  const [isInvitedAdmin, setIsInvitedAdmin] = useState(false);
+
   useEffect(() => {
     if (!loading && !user) navigate("/login");
     if (!loading && role) navigate("/");
   }, [loading, user, role, navigate]);
+
+  // Check if user is invited as admin
+  useEffect(() => {
+    if (user?.email) {
+      supabase.rpc("check_invitation" as any, { _email: user.email }).then(({ data }) => {
+        // Fallback: try to setup as admin - if it works, user was invited
+        setIsInvitedAdmin(false); // We'll handle via accountType
+      });
+    }
+  }, [user]);
 
   const handleSetup = async (e: React.FormEvent) => {
     e.preventDefault();

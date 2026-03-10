@@ -42,7 +42,11 @@ const Navbar = () => {
     navigate("/");
   };
 
-  const visibleLinks = navLinks.filter((link) => !link.requireAuth || user);
+  const visibleLinks = navLinks.filter((link) => {
+    if (link.requireAuth && !user) return false;
+    if ((link as any).requireRole && (link as any).requireRole !== role) return false;
+    return true;
+  });
 
   return (
     <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
