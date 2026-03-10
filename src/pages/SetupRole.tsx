@@ -11,27 +11,34 @@ import { useAuth } from "@/contexts/AuthContext";
 const SetupRole = () => {
   const { user, role, loading } = useAuth();
   const navigate = useNavigate();
-  const [accountType, setAccountType] = useState<"parent" | "specialist">("parent");
+  const [accountType, setAccountType] = useState<"parent" | "specialist" | "admin">("parent");
   const [specialty, setSpecialty] = useState("");
   const [bio, setBio] = useState("");
   const [experienceYears, setExperienceYears] = useState("");
   const [conditions, setConditions] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
-
   const [isInvitedAdmin, setIsInvitedAdmin] = useState(false);
+  const [isInvitedSpecialist, setIsInvitedSpecialist] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) navigate("/login");
     if (!loading && role) navigate("/");
   }, [loading, user, role, navigate]);
 
-  // Check if user is invited as admin
+  // Check if user has an invitation
   useEffect(() => {
     if (user?.email) {
-      supabase.rpc("check_invitation" as any, { _email: user.email }).then(({ data }) => {
-        // Fallback: try to setup as admin - if it works, user was invited
-        setIsInvitedAdmin(false); // We'll handle via accountType
-      });
+      // Try setup as admin to check - we use a direct approach
+      // Query won't work due to RLS, so we attempt the role setup
+      // Instead, let's try calling setup_user_role with admin and see if it works
+      // Better: just attempt and catch error
+      const checkAdmin = async () => {
+        // We can't query invited_users (RLS), so we infer from setup attempt
+        // Simple approach: show admin option and let setup_user_role handle validation
+        setIsInvitedAdmin(true); // Show option, server will validate
+        setIsInvitedSpecialist(true);
+      };
+      checkAdmin();
     }
   }, [user]);
 
