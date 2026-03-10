@@ -226,12 +226,12 @@ const AdminDashboard = () => {
                             <div className="flex gap-2">
                               {!s.is_approved && (
                                 <Button size="sm" variant="outline" className="gap-1 rounded-lg" onClick={() => handleApprove(s.id)}>
-                                  <CheckCircle className="w-4 h-4 text-green-600" /> موافقة
+                                  <CheckCircle className="w-4 h-4 text-secondary" /> موافقة
                                 </Button>
                               )}
                               {s.is_approved && (
                                 <Button size="sm" variant="outline" className="gap-1 rounded-lg" onClick={() => handleReject(s.id)}>
-                                  <XCircle className="w-4 h-4 text-red-500" /> إيقاف
+                                  <XCircle className="w-4 h-4 text-destructive" /> إيقاف
                                 </Button>
                               )}
                             </div>
