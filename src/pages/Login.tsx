@@ -20,8 +20,6 @@ const Login = () => {
   const navigate = useNavigate();
   const { user, role } = useAuth();
 
-  const { user, role } = useAuth();
-
   // Redirect if already logged in
   if (user && role === "admin") {
     navigate("/admin");
