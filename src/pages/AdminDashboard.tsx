@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -14,7 +15,14 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CheckCircle, XCircle, UserPlus, Shield, Stethoscope, Trash2, Users, Baby, UserCheck } from "lucide-react";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { CheckCircle, XCircle, UserPlus, Shield, Stethoscope, Trash2, Users, Baby, UserCheck, Pencil } from "lucide-react";
 
 interface SpecialistRow {
   id: string;
@@ -129,6 +137,62 @@ const AdminDashboard = () => {
     if (error) toast.error(error.message);
     else {
       toast.success("تم رفض المتخصص");
+      fetchSpecialists();
+    }
+  };
+
+  const handleDeleteSpecialist = async (id: string) => {
+    const { error } = await supabase.from("specialists").delete().eq("id", id);
+    if (error) toast.error(error.message);
+    else {
+      toast.success("تم حذف المتخصص");
+      fetchSpecialists();
+      fetchStats();
+    }
+  };
+
+  const [editingSpecialist, setEditingSpecialist] = useState<SpecialistRow | null>(null);
+  const [editSpecialty, setEditSpecialty] = useState("");
+  const [editBio, setEditBio] = useState("");
+  const [editExp, setEditExp] = useState("");
+  const [editConditions, setEditConditions] = useState<string[]>([]);
+  const [editSpecName, setEditSpecName] = useState("");
+
+  const openEditDialog = (s: SpecialistRow) => {
+    setEditingSpecialist(s);
+    setEditSpecialty(s.specialty);
+    setEditBio(s.bio || "");
+    setEditExp(s.experience_years?.toString() || "");
+    setEditConditions([...s.conditions]);
+    setEditSpecName(s.profile?.full_name || "");
+  };
+
+  const handleSaveSpecialist = async () => {
+    if (!editingSpecialist) return;
+    setSaving(true);
+    const { error } = await supabase
+      .from("specialists")
+      .update({
+        specialty: editSpecialty,
+        bio: editBio,
+        experience_years: parseInt(editExp) || 0,
+        conditions: editConditions as any,
+      })
+      .eq("id", editingSpecialist.id);
+
+    // Update profile name if changed
+    if (editSpecName !== editingSpecialist.profile?.full_name) {
+      await supabase
+        .from("profiles")
+        .update({ full_name: editSpecName })
+        .eq("user_id", editingSpecialist.user_id);
+    }
+
+    setSaving(false);
+    if (error) toast.error(error.message);
+    else {
+      toast.success("تم تحديث بيانات المتخصص");
+      setEditingSpecialist(null);
       fetchSpecialists();
     }
   };
@@ -261,6 +325,9 @@ const AdminDashboard = () => {
                           </TableCell>
                           <TableCell>
                             <div className="flex gap-2">
+                              <Button size="sm" variant="outline" className="gap-1 rounded-lg" onClick={() => openEditDialog(s)}>
+                                <Pencil className="w-4 h-4" /> تعديل
+                              </Button>
                               {!s.is_approved && (
                                 <Button size="sm" variant="outline" className="gap-1 rounded-lg" onClick={() => handleApprove(s.id)}>
                                   <CheckCircle className="w-4 h-4 text-secondary" /> موافقة
@@ -271,6 +338,27 @@ const AdminDashboard = () => {
                                   <XCircle className="w-4 h-4 text-destructive" /> إيقاف
                                 </Button>
                               )}
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button size="sm" variant="ghost">
+                                    <Trash2 className="w-4 h-4 text-destructive" />
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>حذف المتخصص</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      هل أنت متأكد من حذف {s.profile?.full_name || "هذا المتخصص"}؟ لا يمكن التراجع عن هذا الإجراء.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>إلغاء</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => handleDeleteSpecialist(s.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                      حذف
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
                             </div>
                           </TableCell>
                         </TableRow>
@@ -372,6 +460,65 @@ const AdminDashboard = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Edit Specialist Dialog */}
+      <Dialog open={!!editingSpecialist} onOpenChange={(open) => !open && setEditingSpecialist(null)}>
+        <DialogContent className="max-w-md" dir="rtl">
+          <DialogHeader>
+            <DialogTitle>تعديل بيانات المتخصص</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium text-foreground mb-1 block">الاسم</label>
+              <Input value={editSpecName} onChange={(e) => setEditSpecName(e.target.value)} className="rounded-xl" />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground mb-1 block">التخصص</label>
+              <Input value={editSpecialty} onChange={(e) => setEditSpecialty(e.target.value)} className="rounded-xl" />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground mb-1 block">سنوات الخبرة</label>
+              <Input type="number" value={editExp} onChange={(e) => setEditExp(e.target.value)} className="rounded-xl" />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground mb-1 block">نبذة</label>
+              <Textarea value={editBio} onChange={(e) => setEditBio(e.target.value)} className="rounded-xl" rows={3} />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground mb-2 block">الحالات</label>
+              <div className="flex gap-2">
+                {[
+                  { value: "adhd", label: "⚡ فرط الحركة" },
+                  { value: "down_syndrome", label: "💛 متلازمة داون" },
+                ].map((c) => (
+                  <button
+                    key={c.value}
+                    type="button"
+                    onClick={() =>
+                      setEditConditions((prev) =>
+                        prev.includes(c.value) ? prev.filter((x) => x !== c.value) : [...prev, c.value]
+                      )
+                    }
+                    className={`flex-1 py-2 rounded-xl text-sm font-medium transition-colors border ${
+                      editConditions.includes(c.value)
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-muted text-muted-foreground border-border"
+                    }`}
+                  >
+                    {c.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditingSpecialist(null)} className="rounded-xl">إلغاء</Button>
+            <Button onClick={handleSaveSpecialist} disabled={saving} className="rounded-xl">
+              {saving ? "جاري الحفظ..." : "حفظ"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 };
