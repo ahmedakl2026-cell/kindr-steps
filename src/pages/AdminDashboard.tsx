@@ -14,7 +14,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CheckCircle, XCircle, UserPlus, Shield, Stethoscope, Trash2 } from "lucide-react";
+import { CheckCircle, XCircle, UserPlus, Shield, Stethoscope, Trash2, Users, Baby, UserCheck } from "lucide-react";
 
 interface SpecialistRow {
   id: string;
