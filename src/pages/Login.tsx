@@ -47,10 +47,18 @@ const Login = () => {
 
         toast.success("تم إنشاء الحساب! يرجى التحقق من بريدك الإلكتروني لتأكيد الحساب.");
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         toast.success("تم تسجيل الدخول بنجاح!");
-        navigate("/");
+        // Check role for redirect
+        const { data: roleData } = await supabase.from("user_roles").select("role").eq("user_id", data.user.id).maybeSingle();
+        if (!roleData) {
+          navigate("/setup-role");
+        } else if (roleData.role === "admin") {
+          navigate("/admin");
+        } else {
+          navigate("/");
+        }
       }
     } catch (error: any) {
       toast.error(error.message || "حدث خطأ");
