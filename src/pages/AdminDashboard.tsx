@@ -62,8 +62,22 @@ const AdminDashboard = () => {
     if (role === "admin") {
       fetchSpecialists();
       fetchInvitations();
+      fetchStats();
     }
   }, [role]);
+
+  const fetchStats = async () => {
+    const [{ count: usersCount }, { count: approvedCount }, { count: childrenCount }] = await Promise.all([
+      supabase.from("profiles").select("*", { count: "exact", head: true }),
+      supabase.from("specialists").select("*", { count: "exact", head: true }).eq("is_approved", true),
+      supabase.from("children").select("*", { count: "exact", head: true }),
+    ]);
+    setStats({
+      users: usersCount ?? 0,
+      approvedSpecialists: approvedCount ?? 0,
+      children: childrenCount ?? 0,
+    });
+  };
 
   const fetchSpecialists = async () => {
     const { data } = await supabase
