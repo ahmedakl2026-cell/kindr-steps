@@ -325,6 +325,9 @@ const AdminDashboard = () => {
                           </TableCell>
                           <TableCell>
                             <div className="flex gap-2">
+                              <Button size="sm" variant="outline" className="gap-1 rounded-lg" onClick={() => openEditDialog(s)}>
+                                <Pencil className="w-4 h-4" /> تعديل
+                              </Button>
                               {!s.is_approved && (
                                 <Button size="sm" variant="outline" className="gap-1 rounded-lg" onClick={() => handleApprove(s.id)}>
                                   <CheckCircle className="w-4 h-4 text-secondary" /> موافقة
@@ -335,6 +338,27 @@ const AdminDashboard = () => {
                                   <XCircle className="w-4 h-4 text-destructive" /> إيقاف
                                 </Button>
                               )}
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button size="sm" variant="ghost">
+                                    <Trash2 className="w-4 h-4 text-destructive" />
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>حذف المتخصص</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      هل أنت متأكد من حذف {s.profile?.full_name || "هذا المتخصص"}؟ لا يمكن التراجع عن هذا الإجراء.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>إلغاء</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => handleDeleteSpecialist(s.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                      حذف
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
                             </div>
                           </TableCell>
                         </TableRow>
