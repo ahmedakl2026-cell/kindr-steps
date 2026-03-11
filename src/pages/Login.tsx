@@ -18,7 +18,7 @@ const Login = () => {
   const [accountType, setAccountType] = useState<"parent" | "specialist">("parent");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, role } = useAuth();
 
   const { user, role } = useAuth();
 
