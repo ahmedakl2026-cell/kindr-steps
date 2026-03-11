@@ -141,6 +141,62 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleDeleteSpecialist = async (id: string) => {
+    const { error } = await supabase.from("specialists").delete().eq("id", id);
+    if (error) toast.error(error.message);
+    else {
+      toast.success("تم حذف المتخصص");
+      fetchSpecialists();
+      fetchStats();
+    }
+  };
+
+  const [editingSpecialist, setEditingSpecialist] = useState<SpecialistRow | null>(null);
+  const [editSpecialty, setEditSpecialty] = useState("");
+  const [editBio, setEditBio] = useState("");
+  const [editExp, setEditExp] = useState("");
+  const [editConditions, setEditConditions] = useState<string[]>([]);
+  const [editSpecName, setEditSpecName] = useState("");
+
+  const openEditDialog = (s: SpecialistRow) => {
+    setEditingSpecialist(s);
+    setEditSpecialty(s.specialty);
+    setEditBio(s.bio || "");
+    setEditExp(s.experience_years?.toString() || "");
+    setEditConditions([...s.conditions]);
+    setEditSpecName(s.profile?.full_name || "");
+  };
+
+  const handleSaveSpecialist = async () => {
+    if (!editingSpecialist) return;
+    setSaving(true);
+    const { error } = await supabase
+      .from("specialists")
+      .update({
+        specialty: editSpecialty,
+        bio: editBio,
+        experience_years: parseInt(editExp) || 0,
+        conditions: editConditions as any,
+      })
+      .eq("id", editingSpecialist.id);
+
+    // Update profile name if changed
+    if (editSpecName !== editingSpecialist.profile?.full_name) {
+      await supabase
+        .from("profiles")
+        .update({ full_name: editSpecName })
+        .eq("user_id", editingSpecialist.user_id);
+    }
+
+    setSaving(false);
+    if (error) toast.error(error.message);
+    else {
+      toast.success("تم تحديث بيانات المتخصص");
+      setEditingSpecialist(null);
+      fetchSpecialists();
+    }
+  };
+
   const handleInvite = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inviteEmail.trim()) return;
