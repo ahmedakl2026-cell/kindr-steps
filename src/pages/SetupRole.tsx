@@ -71,7 +71,7 @@ const SetupRole = () => {
           ? "تم إنشاء حسابك! سيتم مراجعته من الإدارة."
           : "تم إعداد حسابك بنجاح!"
       );
-      window.location.href = "/";
+      window.location.href = accountType === "admin" ? "/admin" : "/";
     } catch (error: any) {
       toast.error(error.message || "حدث خطأ");
     } finally {
