@@ -4,6 +4,7 @@ import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import {
@@ -13,7 +14,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CheckCircle, XCircle, UserPlus, Shield, Stethoscope, Trash2 } from "lucide-react";
+import { CheckCircle, XCircle, UserPlus, Shield, Stethoscope, Trash2, Users, Baby, UserCheck } from "lucide-react";
 
 interface SpecialistRow {
   id: string;
@@ -44,6 +45,7 @@ const AdminDashboard = () => {
   const [editName, setEditName] = useState("");
   const [editPhone, setEditPhone] = useState("");
   const [saving, setSaving] = useState(false);
+  const [stats, setStats] = useState({ users: 0, approvedSpecialists: 0, children: 0 });
 
   useEffect(() => {
     if (!loading && (!user || role !== "admin")) navigate("/");
@@ -60,8 +62,22 @@ const AdminDashboard = () => {
     if (role === "admin") {
       fetchSpecialists();
       fetchInvitations();
+      fetchStats();
     }
   }, [role]);
+
+  const fetchStats = async () => {
+    const [{ count: usersCount }, { count: approvedCount }, { count: childrenCount }] = await Promise.all([
+      supabase.from("profiles").select("*", { count: "exact", head: true }),
+      supabase.from("specialists").select("*", { count: "exact", head: true }).eq("is_approved", true),
+      supabase.from("children").select("*", { count: "exact", head: true }),
+    ]);
+    setStats({
+      users: usersCount ?? 0,
+      approvedSpecialists: approvedCount ?? 0,
+      children: childrenCount ?? 0,
+    });
+  };
 
   const fetchSpecialists = async () => {
     const { data } = await supabase
@@ -170,7 +186,28 @@ const AdminDashboard = () => {
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8" dir="rtl">
-        <h1 className="text-3xl font-extrabold mb-8 text-foreground">لوحة تحكم الإدارة</h1>
+        <h1 className="text-3xl font-extrabold mb-6 text-foreground">لوحة تحكم الإدارة</h1>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+          {[
+            { label: "إجمالي المستخدمين", value: stats.users, icon: Users, color: "text-primary" },
+            { label: "المتخصصون المعتمدون", value: stats.approvedSpecialists, icon: UserCheck, color: "text-secondary" },
+            { label: "الأطفال المسجلون", value: stats.children, icon: Baby, color: "text-accent-foreground" },
+          ].map((s) => (
+            <Card key={s.label} className="rounded-2xl border-border">
+              <CardContent className="flex items-center gap-4 p-6">
+                <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center">
+                  <s.icon className={`w-6 h-6 ${s.color}`} />
+                </div>
+                <div>
+                  <p className="text-2xl font-extrabold text-foreground">{s.value}</p>
+                  <p className="text-sm text-muted-foreground">{s.label}</p>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
 
         <Tabs defaultValue="specialists" className="space-y-6">
           <TabsList className="grid w-full grid-cols-3 rounded-xl">
