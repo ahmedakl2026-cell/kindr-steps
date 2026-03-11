@@ -45,6 +45,7 @@ const AdminDashboard = () => {
   const [editName, setEditName] = useState("");
   const [editPhone, setEditPhone] = useState("");
   const [saving, setSaving] = useState(false);
+  const [stats, setStats] = useState({ users: 0, approvedSpecialists: 0, children: 0 });
 
   useEffect(() => {
     if (!loading && (!user || role !== "admin")) navigate("/");
