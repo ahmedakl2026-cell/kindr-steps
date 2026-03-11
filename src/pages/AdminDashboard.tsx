@@ -186,7 +186,28 @@ const AdminDashboard = () => {
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8" dir="rtl">
-        <h1 className="text-3xl font-extrabold mb-8 text-foreground">لوحة تحكم الإدارة</h1>
+        <h1 className="text-3xl font-extrabold mb-6 text-foreground">لوحة تحكم الإدارة</h1>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+          {[
+            { label: "إجمالي المستخدمين", value: stats.users, icon: Users, color: "text-primary" },
+            { label: "المتخصصون المعتمدون", value: stats.approvedSpecialists, icon: UserCheck, color: "text-secondary" },
+            { label: "الأطفال المسجلون", value: stats.children, icon: Baby, color: "text-accent-foreground" },
+          ].map((s) => (
+            <Card key={s.label} className="rounded-2xl border-border">
+              <CardContent className="flex items-center gap-4 p-6">
+                <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center">
+                  <s.icon className={`w-6 h-6 ${s.color}`} />
+                </div>
+                <div>
+                  <p className="text-2xl font-extrabold text-foreground">{s.value}</p>
+                  <p className="text-sm text-muted-foreground">{s.label}</p>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
 
         <Tabs defaultValue="specialists" className="space-y-6">
           <TabsList className="grid w-full grid-cols-3 rounded-xl">
