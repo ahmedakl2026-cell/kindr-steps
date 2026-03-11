@@ -460,6 +460,65 @@ const AdminDashboard = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Edit Specialist Dialog */}
+      <Dialog open={!!editingSpecialist} onOpenChange={(open) => !open && setEditingSpecialist(null)}>
+        <DialogContent className="max-w-md" dir="rtl">
+          <DialogHeader>
+            <DialogTitle>تعديل بيانات المتخصص</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium text-foreground mb-1 block">الاسم</label>
+              <Input value={editSpecName} onChange={(e) => setEditSpecName(e.target.value)} className="rounded-xl" />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground mb-1 block">التخصص</label>
+              <Input value={editSpecialty} onChange={(e) => setEditSpecialty(e.target.value)} className="rounded-xl" />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground mb-1 block">سنوات الخبرة</label>
+              <Input type="number" value={editExp} onChange={(e) => setEditExp(e.target.value)} className="rounded-xl" />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground mb-1 block">نبذة</label>
+              <Textarea value={editBio} onChange={(e) => setEditBio(e.target.value)} className="rounded-xl" rows={3} />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground mb-2 block">الحالات</label>
+              <div className="flex gap-2">
+                {[
+                  { value: "adhd", label: "⚡ فرط الحركة" },
+                  { value: "down_syndrome", label: "💛 متلازمة داون" },
+                ].map((c) => (
+                  <button
+                    key={c.value}
+                    type="button"
+                    onClick={() =>
+                      setEditConditions((prev) =>
+                        prev.includes(c.value) ? prev.filter((x) => x !== c.value) : [...prev, c.value]
+                      )
+                    }
+                    className={`flex-1 py-2 rounded-xl text-sm font-medium transition-colors border ${
+                      editConditions.includes(c.value)
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-muted text-muted-foreground border-border"
+                    }`}
+                  >
+                    {c.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditingSpecialist(null)} className="rounded-xl">إلغاء</Button>
+            <Button onClick={handleSaveSpecialist} disabled={saving} className="rounded-xl">
+              {saving ? "جاري الحفظ..." : "حفظ"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 };
