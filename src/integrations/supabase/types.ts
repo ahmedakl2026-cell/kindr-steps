@@ -247,9 +247,11 @@ export type Database = {
       }
       specialists: {
         Row: {
+          avatar_url: string | null
           bio: string | null
           conditions: Database["public"]["Enums"]["condition_type"][]
           created_at: string
+          credentials: string | null
           experience_years: number | null
           id: string
           is_approved: boolean
@@ -258,9 +260,11 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          avatar_url?: string | null
           bio?: string | null
           conditions?: Database["public"]["Enums"]["condition_type"][]
           created_at?: string
+          credentials?: string | null
           experience_years?: number | null
           id?: string
           is_approved?: boolean
@@ -269,9 +273,11 @@ export type Database = {
           user_id: string
         }
         Update: {
+          avatar_url?: string | null
           bio?: string | null
           conditions?: Database["public"]["Enums"]["condition_type"][]
           created_at?: string
+          credentials?: string | null
           experience_years?: number | null
           id?: string
           is_approved?: boolean
@@ -325,7 +331,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "specialist" | "parent"
-      condition_type: "adhd" | "down_syndrome"
+      condition_type: "adhd" | "down_syndrome" | "autism"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -454,7 +460,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "specialist", "parent"],
-      condition_type: ["adhd", "down_syndrome"],
+      condition_type: ["adhd", "down_syndrome", "autism"],
     },
   },
 } as const

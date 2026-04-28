@@ -16,6 +16,8 @@ interface Specialist {
   bio: string | null;
   experience_years: number | null;
   conditions: string[];
+  avatar_url: string | null;
+  credentials: string | null;
   full_name: string;
 }
 
@@ -34,7 +36,7 @@ const Specialists = () => {
     const fetchSpecialists = async () => {
       const { data, error } = await supabase
         .from("specialists")
-        .select("id, user_id, specialty, bio, experience_years, conditions")
+        .select("id, user_id, specialty, bio, experience_years, conditions, avatar_url, credentials")
         .eq("is_approved", true);
 
       if (error) {
@@ -81,6 +83,7 @@ const Specialists = () => {
     switch (c) {
       case "adhd": return "⚡ فرط الحركة";
       case "down_syndrome": return "💛 متلازمة داون";
+      case "autism": return "🧩 طيف التوحد";
       default: return c;
     }
   };
@@ -121,19 +124,41 @@ const Specialists = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {filtered.map((s) => (
-              <div key={s.id} className="p-6 rounded-2xl border border-border bg-card card-hover">
-                <div className="text-4xl mb-3">👨‍⚕️</div>
-                <h3 className="text-lg font-bold mb-1">{s.full_name}</h3>
-                <p className="text-sm text-primary font-medium mb-2">{s.specialty}</p>
-                {s.bio && <p className="text-xs text-muted-foreground mb-2 line-clamp-2">{s.bio}</p>}
-                <div className="flex flex-wrap gap-1 mb-3">
+              <div key={s.id} className="p-6 rounded-2xl border border-border bg-card card-hover flex flex-col">
+                <div className="flex items-start gap-3 mb-3">
+                  {s.avatar_url ? (
+                    <img
+                      src={s.avatar_url}
+                      alt={s.full_name}
+                      className="w-16 h-16 rounded-2xl object-cover bg-muted border border-border flex-shrink-0"
+                    />
+                  ) : (
+                    <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center text-3xl flex-shrink-0">👨‍⚕️</div>
+                  )}
+                  <div className="min-w-0">
+                    <h3 className="text-lg font-bold leading-tight">{s.full_name}</h3>
+                    <p className="text-sm text-primary font-medium">{s.specialty}</p>
+                    {s.experience_years && (
+                      <p className="text-xs text-muted-foreground mt-1">خبرة {s.experience_years} سنوات</p>
+                    )}
+                  </div>
+                </div>
+                {s.bio && <p className="text-xs text-muted-foreground mb-3 line-clamp-3">{s.bio}</p>}
+                {s.credentials && (
+                  <div className="mb-3 p-3 rounded-xl bg-muted/50 border border-border">
+                    <div className="flex items-center gap-1 text-xs font-bold text-foreground mb-1">
+                      <Star className="w-3 h-3 text-primary" />
+                      الشهادات والمؤهلات
+                    </div>
+                    <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3">{s.credentials}</p>
+                  </div>
+                )}
+                <div className="flex flex-wrap gap-1 mb-4">
                   {s.conditions.map((c) => (
                     <span key={c} className="text-xs bg-muted px-2 py-1 rounded-lg">{conditionLabel(c)}</span>
                   ))}
                 </div>
-                <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
-                  {s.experience_years && <span>خبرة {s.experience_years} سنوات</span>}
-                </div>
+                <div className="mt-auto"></div>
                 <div className="flex gap-2">
                   <Button
                     variant="outline"
