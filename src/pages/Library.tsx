@@ -1,6 +1,29 @@
 import Layout from "@/components/Layout";
-import { BookOpen, ChevronLeft, FileText, Info, Stethoscope, Apple, Ruler, ClipboardList, Users, School, Globe, Brain, Activity, Tv } from "lucide-react";
+import {
+  BookOpen,
+  ChevronLeft,
+  Info,
+  Stethoscope,
+  Apple,
+  Ruler,
+  ClipboardList,
+  Users,
+  School,
+  Globe,
+  Brain,
+  Activity,
+  Tv,
+  Sparkles,
+  Zap,
+} from "lucide-react";
 import { useState } from "react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 type Section = { icon: any; title: string; content: string };
 
@@ -9,9 +32,37 @@ type Disability = {
   title: string;
   emoji: string;
   color: string;
+  accent: string;
+  layout: "cards" | "timeline";
   definition: string;
   sections: Section[];
 };
+
+const asdSections: Section[] = [
+  { icon: Stethoscope, title: "الأسباب", content: "ترتبط أسباب اضطراب طيف التوحد بعدة عوامل متداخلة، تشمل العوامل الوراثية التي تلعب دورًا رئيسيًا، واضطرابات نمو وظائف الدماغ، بالإضافة إلى بعض العوامل البيئية مثل التعرض لمشكلات أثناء الحمل أو الولادة، مما يؤدي إلى خلل في تطور الجهاز العصبي." },
+  { icon: Apple, title: "التغذية والفيتامينات", content: "تلعب التغذية دورًا مهمًا في تحسين الحالة العامة للطفل، حيث يُنصح باتباع نظام غذائي متوازن يحتوي على البروتينات والفيتامينات والمعادن، مع تقليل السكريات والمواد الحافظة. ومن أهم الفيتامينات والعناصر المفيدة: فيتامين D للعظام والمناعة، فيتامين B6 لتحسين وظائف المخ، فيتامين B12 لدعم الجهاز العصبي، أحماض أوميجا 3 لتحسين الانتباه، الحديد لتحسين التركيز، والكالسيوم لصحة العظام. كما قد يُستخدم نظام غذائي خالٍ من الجلوتين والكازين لبعض الحالات تحت إشراف طبي." },
+  { icon: Ruler, title: "المقاييس", content: "يتم تشخيص الحالة باستخدام أدوات مقننة مثل مقياس CARS، ومقياس GARS، واختبار ADOS، والتي تساعد في تحديد شدة التوحد ووضع خطة علاج مناسبة لكل طفل." },
+  { icon: ClipboardList, title: "اختبارات مساعدة", content: "تشمل اختبارات الذكاء مثل مقياس ستانفورد بينيه، والذي يعتمد أحيانًا على صور وأنشطة لقياس القدرات العقلية، بالإضافة إلى اختبار السلوك التكيفي مثل مقياس فاينلاند، والذي يقيس قدرة الطفل على الاعتماد على نفسه، والتواصل، والمهارات الاجتماعية." },
+  { icon: Users, title: "دور الأسرة", content: "تُعد الأسرة العنصر الأهم في رعاية الطفل، حيث تبدأ بالاكتشاف المبكر للأعراض، ثم تقبل الطفل ودعمه نفسيًا، وتوفير بيئة آمنة ومستقرة خالية من الضغوط. كما تقوم الأسرة بالالتزام بالجلسات العلاجية، وتنفيذ الإرشادات داخل المنزل، وتدريب الطفل على مهارات الحياة اليومية مثل الأكل واللبس والنظافة." },
+  { icon: School, title: "دور المدرسة والمعلمات", content: "تلعب المدرسة دورًا مهمًا في دمج الطفل، حيث تقوم المعلمات باستخدام استراتيجيات تعليمية مناسبة مثل التبسيط، والتكرار، واستخدام الوسائل البصرية. كما يجب على المعلمة التحلي بالصبر، وتقديم التعليم خطوة بخطوة، وتعزيز السلوك الإيجابي باستمرار." },
+  { icon: Globe, title: "دور المجتمع", content: "يتمثل دور المجتمع في نشر الوعي بطبيعة التوحد، وتقليل التنمر، وتوفير مراكز متخصصة للعلاج والتأهيل، ودعم الأسر نفسيًا وماديًا، بالإضافة إلى توفير فرص دمج حقيقية للأطفال في الأنشطة المختلفة." },
+  { icon: Brain, title: "العلاج السلوكي", content: "يعتمد العلاج السلوكي على أساليب علمية مثل تحليل السلوك التطبيقي (ABA)، والذي يقوم على تقسيم المهارات إلى خطوات صغيرة وتعزيز السلوك الصحيح. كما يشمل التعزيز الإيجابي، والنمذجة، وتشكيل السلوك، والتدريب على المهارات الاجتماعية." },
+  { icon: Activity, title: "الأنشطة المقترحة", content: "ألعاب التركيب (البازل والمكعبات) لتنمية التركيز وحل المشكلات، التلوين والرسم للتعبير عن الذات، تقليد الأصوات والكلام، اللعب الحسي مثل الرمل والعجينة والماء، الأغاني المصحوبة بالحركات، أنشطة التصنيف، اللعب التخيلي، والاعتماد على روتين يومي ثابت." },
+  { icon: Tv, title: "وسائل الإعلام", content: "تلعب وسائل الإعلام دورًا كبيرًا في نشر الوعي، من خلال تقديم برامج توعوية، وعرض قصص نجاح، وتقديم إرشادات للأسر والمعلمين، مما يساعد في تحسين نظرة المجتمع للأطفال المصابين بالتوحد." },
+];
+
+const adhdSections: Section[] = [
+  { icon: Stethoscope, title: "الأسباب", content: "تشمل الأسباب العوامل الوراثية، واضطرابات في كيمياء المخ، وبعض العوامل البيئية مثل التوتر الأسري أو التعرض لمشكلات أثناء الحمل، مما يؤدي إلى ضعف التحكم في الانتباه والسلوك." },
+  { icon: Apple, title: "التغذية والفيتامينات", content: "تُعد التغذية عاملاً مهمًا في تحسين حالة الطفل، حيث يُنصح بتناول غذاء متوازن غني بالبروتينات، وأحماض أوميجا 3، والحديد، والزنك، وفيتامين B، وفيتامين D، مع تقليل السكريات والمواد الحافظة. كما يجب تنظيم مواعيد الوجبات والاهتمام بتناول الإفطار يوميًا لتحسين التركيز." },
+  { icon: Ruler, title: "المقاييس", content: "يتم التشخيص باستخدام مقياس كونرز (Conners Rating Scale)، ومقياس ADHD Rating Scale، والتي تساعد في تقييم شدة الأعراض بدقة." },
+  { icon: ClipboardList, title: "اختبارات مساعدة", content: "تشمل اختبارات الذكاء مثل ستانفورد بينيه لقياس القدرات العقلية، واختبار السلوك التكيفي الذي يقيس مهارات الطفل في الحياة اليومية والتفاعل الاجتماعي." },
+  { icon: Users, title: "دور الأسرة", content: "تقوم الأسرة بدور كبير في تنظيم حياة الطفل من خلال وضع روتين يومي ثابت، واستخدام التعزيز الإيجابي، وتقسيم المهام، ومتابعة السلوك بشكل مستمر. كما تهتم الأسرة بالرعاية الغذائية من خلال تقديم طعام صحي، وتقليل السكريات." },
+  { icon: School, title: "دور المدرسة والمعلمات", content: "تسهم المدرسة في دعم الطفل من خلال تقليل المشتتات داخل الفصل، واستخدام طرق تدريس مرنة، وإعطاء فترات راحة قصيرة. كما يجب على المعلمة التعامل بصبر، واستخدام التعزيز الإيجابي، وتنويع الأنشطة." },
+  { icon: Globe, title: "دور المجتمع", content: "يتمثل دور المجتمع في نشر الوعي، وتوفير خدمات علاجية وتأهيلية، ودعم دمج الأطفال في المدارس والأنشطة، وتقديم الدعم للأسر." },
+  { icon: Brain, title: "العلاج السلوكي", content: "يشمل العلاج السلوكي استخدام نظام المكافآت، وجدول تعديل السلوك، وتنظيم البيئة، والتدريب على ضبط النفس، وتقسيم المهام، مما يساعد على تحسين التركيز وتقليل الاندفاعية." },
+  { icon: Activity, title: "الأنشطة المقترحة", content: "ألعاب الحركة كالجري ونط الحبل لتفريغ الطاقة، ألعاب التركيز مثل البازل، لعبة ركز 5 دقائق، التلوين والعجينة، التصنيف والترتيب، ألعاب الذاكرة، الأغاني الحركية، وتمارين التهدئة والتنفس العميق." },
+  { icon: Tv, title: "وسائل الإعلام", content: "تُسهم وسائل الإعلام في توعية المجتمع من خلال تقديم محتوى تثقيفي، وعرض برامج إرشادية، ونشر معلومات تساعد الأسر والمعلمين على التعامل الصحيح مع الأطفال." },
+];
 
 const disabilities: Disability[] = [
   {
@@ -19,142 +70,31 @@ const disabilities: Disability[] = [
     title: "اضطراب طيف التوحد",
     emoji: "🧩",
     color: "bg-khatwa-light-green",
+    accent: "secondary",
+    layout: "cards",
     definition:
-      "يُعد اضطراب طيف التوحد أحد الاضطرابات النمائية الشاملة التي تظهر في مرحلة الطفولة المبكرة، ويؤثر بشكل واضح على مهارات التواصل اللفظي وغير اللفظي، والتفاعل الاجتماعي، وأنماط السلوك، كما يتميز بوجود سلوكيات نمطية متكررة، وتختلف شدته من حالة لأخرى.",
-    sections: [
-      {
-        icon: Stethoscope,
-        title: "الأسباب",
-        content:
-          "ترتبط أسباب اضطراب طيف التوحد بعدة عوامل متداخلة، تشمل العوامل الوراثية التي تلعب دورًا رئيسيًا، واضطرابات نمو وظائف الدماغ، بالإضافة إلى بعض العوامل البيئية مثل التعرض لمشكلات أثناء الحمل أو الولادة، مما يؤدي إلى خلل في تطور الجهاز العصبي.",
-      },
-      {
-        icon: Apple,
-        title: "التغذية والفيتامينات",
-        content:
-          "تلعب التغذية دورًا مهمًا في تحسين الحالة العامة للطفل، حيث يُنصح باتباع نظام غذائي متوازن يحتوي على البروتينات والفيتامينات والمعادن، مع تقليل السكريات والمواد الحافظة. ومن أهم الفيتامينات والعناصر المفيدة: فيتامين D للعظام والمناعة، فيتامين B6 لتحسين وظائف المخ، فيتامين B12 لدعم الجهاز العصبي، أحماض أوميجا 3 لتحسين الانتباه، الحديد لتحسين التركيز، والكالسيوم لصحة العظام. كما قد يُستخدم نظام غذائي خالٍ من الجلوتين والكازين لبعض الحالات تحت إشراف طبي.",
-      },
-      {
-        icon: Ruler,
-        title: "المقاييس",
-        content:
-          "يتم تشخيص الحالة باستخدام أدوات مقننة مثل مقياس CARS، ومقياس GARS، واختبار ADOS، والتي تساعد في تحديد شدة التوحد ووضع خطة علاج مناسبة لكل طفل.",
-      },
-      {
-        icon: ClipboardList,
-        title: "اختبارات مساعدة",
-        content:
-          "تشمل اختبارات الذكاء مثل مقياس ستانفورد بينيه، والذي يعتمد أحيانًا على صور وأنشطة لقياس القدرات العقلية، بالإضافة إلى اختبار السلوك التكيفي مثل مقياس فاينلاند، والذي يقيس قدرة الطفل على الاعتماد على نفسه، والتواصل، والمهارات الاجتماعية.",
-      },
-      {
-        icon: Users,
-        title: "دور الأسرة",
-        content:
-          "تُعد الأسرة العنصر الأهم في رعاية الطفل، حيث تبدأ بالاكتشاف المبكر للأعراض، ثم تقبل الطفل ودعمه نفسيًا، وتوفير بيئة آمنة ومستقرة خالية من الضغوط. كما تقوم الأسرة بالالتزام بالجلسات العلاجية، وتنفيذ الإرشادات داخل المنزل، وتدريب الطفل على مهارات الحياة اليومية مثل الأكل واللبس والنظافة. كما يشمل دور الأسرة الرعاية الغذائية من خلال تقديم طعام صحي متوازن، وملاحظة الأطعمة التي تؤثر على سلوك الطفل، وتنظيم مواعيد الوجبات، وتشجيع الطفل على تجربة أطعمة جديدة دون إجبار.",
-      },
-      {
-        icon: School,
-        title: "دور المدرسة والمعلمات وتفاعل الزملاء",
-        content:
-          "تلعب المدرسة دورًا مهمًا في دمج الطفل، حيث تقوم المعلمات باستخدام استراتيجيات تعليمية مناسبة مثل التبسيط، والتكرار، واستخدام الوسائل البصرية. كما يجب على المعلمة التحلي بالصبر، وتقديم التعليم خطوة بخطوة، وتعزيز السلوك الإيجابي باستمرار. أما الزملاء، فيجب توعيتهم بكيفية التعامل مع الطفل، وتشجيعهم على التفاعل معه بشكل إيجابي، ومشاركته في الأنشطة مما يساعد على تنمية مهاراته الاجتماعية وتقليل العزلة.",
-      },
-      {
-        icon: Globe,
-        title: "دور المجتمع",
-        content:
-          "يتمثل دور المجتمع في نشر الوعي بطبيعة التوحد، وتقليل التنمر، وتوفير مراكز متخصصة للعلاج والتأهيل، ودعم الأسر نفسيًا وماديًا، بالإضافة إلى توفير فرص دمج حقيقية للأطفال في الأنشطة المختلفة.",
-      },
-      {
-        icon: Brain,
-        title: "العلاج السلوكي",
-        content:
-          "يعتمد العلاج السلوكي على أساليب علمية مثل تحليل السلوك التطبيقي (ABA)، والذي يقوم على تقسيم المهارات إلى خطوات صغيرة وتعزيز السلوك الصحيح. كما يشمل التعزيز الإيجابي، والنمذجة، وتشكيل السلوك، والتدريب على المهارات الاجتماعية، بهدف تحسين التواصل وتقليل السلوكيات غير المرغوبة.",
-      },
-      {
-        icon: Activity,
-        title: "الأنشطة",
-        content:
-          "تشمل الأنشطة المناسبة لأطفال التوحد: ألعاب التركيب (البازل والمكعبات) لتنمية التركيز وحل المشكلات، التلوين والرسم للتعبير عن الذات وتهدئة الأعصاب، تقليد الأصوات والكلام لتحسين مهارات التواصل، اللعب الحسي مثل الرمل والعجينة والماء لتنظيم الإحساس، الأغاني المصحوبة بالحركات لتنمية التفاعل والانتباه، أنشطة التصنيف لتنمية الفهم والتركيز، اللعب التخيلي لتنمية المهارات الاجتماعية، والاعتماد على روتين يومي ثابت لتحقيق الاستقرار النفسي والسلوكي للطفل.",
-      },
-      {
-        icon: Tv,
-        title: "وسائل التواصل الاجتماعي والإعلام",
-        content:
-          "تلعب وسائل الإعلام دورًا كبيرًا في نشر الوعي، من خلال تقديم برامج توعوية، وعرض قصص نجاح، وتقديم إرشادات للأسر والمعلمين، مما يساعد في تحسين نظرة المجتمع للأطفال المصابين بالتوحد.",
-      },
-    ],
+      "يُعد اضطراب طيف التوحد أحد الاضطرابات النمائية الشاملة التي تظهر في مرحلة الطفولة المبكرة، ويؤثر بشكل واضح على مهارات التواصل اللفظي وغير اللفظي، والتفاعل الاجتماعي، وأنماط السلوك.",
+    sections: asdSections,
   },
   {
     id: "adhd",
-    title: "اضطراب فرط الحركة وتشتت الانتباه (ADHD)",
+    title: "اضطراب فرط الحركة وتشتت الانتباه",
     emoji: "⚡",
     color: "bg-khatwa-light-yellow",
+    accent: "accent",
+    layout: "timeline",
     definition:
       "يُعد اضطراب فرط الحركة وتشتت الانتباه من الاضطرابات السلوكية العصبية التي تظهر في الطفولة، ويتميز بفرط النشاط، والاندفاعية، وضعف التركيز، مما يؤثر على الأداء الدراسي والعلاقات الاجتماعية.",
-    sections: [
-      {
-        icon: Stethoscope,
-        title: "الأسباب",
-        content:
-          "تشمل الأسباب العوامل الوراثية، واضطرابات في كيمياء المخ، وبعض العوامل البيئية مثل التوتر الأسري أو التعرض لمشكلات أثناء الحمل، مما يؤدي إلى ضعف التحكم في الانتباه والسلوك.",
-      },
-      {
-        icon: Apple,
-        title: "التغذية والفيتامينات",
-        content:
-          "تُعد التغذية عاملاً مهمًا في تحسين حالة الطفل، حيث يُنصح بتناول غذاء متوازن غني بالبروتينات، وأحماض أوميجا 3، والحديد، والزنك، وفيتامين B، وفيتامين D، مع تقليل السكريات والمواد الحافظة. كما يجب تنظيم مواعيد الوجبات والاهتمام بتناول الإفطار يوميًا لتحسين التركيز.",
-      },
-      {
-        icon: Ruler,
-        title: "المقاييس",
-        content:
-          "يتم التشخيص باستخدام مقياس كونرز (Conners Rating Scale)، ومقياس ADHD Rating Scale، والتي تساعد في تقييم شدة الأعراض بدقة.",
-      },
-      {
-        icon: ClipboardList,
-        title: "اختبارات مساعدة",
-        content:
-          "تشمل اختبارات الذكاء مثل ستانفورد بينيه لقياس القدرات العقلية، واختبار السلوك التكيفي الذي يقيس مهارات الطفل في الحياة اليومية والتفاعل الاجتماعي.",
-      },
-      {
-        icon: Users,
-        title: "دور الأسرة",
-        content:
-          "تقوم الأسرة بدور كبير في تنظيم حياة الطفل من خلال وضع روتين يومي ثابت، واستخدام التعزيز الإيجابي، وتقسيم المهام، ومتابعة السلوك بشكل مستمر. كما تهتم الأسرة بالرعاية الغذائية من خلال تقديم طعام صحي، وتقليل السكريات، وتشجيع الطفل على العادات الغذائية السليمة.",
-      },
-      {
-        icon: School,
-        title: "دور المدرسة والمعلمات وتفاعل الزملاء",
-        content:
-          "تسهم المدرسة في دعم الطفل من خلال تقليل المشتتات داخل الفصل، واستخدام طرق تدريس مرنة، وإعطاء فترات راحة قصيرة. كما يجب على المعلمة التعامل بصبر، واستخدام التعزيز الإيجابي، وتنويع الأنشطة. أما الزملاء، فيجب توعيتهم لتقبل الطفل ومساعدته، وتشجيعه على المشاركة، مما يعزز ثقته بنفسه ويحسن تفاعله الاجتماعي.",
-      },
-      {
-        icon: Globe,
-        title: "دور المجتمع",
-        content:
-          "يتمثل دور المجتمع في نشر الوعي، وتوفير خدمات علاجية وتأهيلية، ودعم دمج الأطفال في المدارس والأنشطة، وتقديم الدعم للأسر.",
-      },
-      {
-        icon: Brain,
-        title: "العلاج السلوكي",
-        content:
-          "يشمل العلاج السلوكي استخدام نظام المكافآت، وجدول تعديل السلوك، وتنظيم البيئة، والتدريب على ضبط النفس، وتقسيم المهام، مما يساعد على تحسين التركيز وتقليل الاندفاعية.",
-      },
-      {
-        icon: Activity,
-        title: "الأنشطة",
-        content:
-          "ألعاب الحركة كالجري ونط الحبل لتفريغ الطاقة، ألعاب التركيز مثل البازل، لعبة ركز 5 دقائق، التلوين والعجينة، التصنيف والترتيب، ألعاب الذاكرة، الأغاني الحركية، وتمارين التهدئة والتنفس العميق.",
-      },
-      {
-        icon: Tv,
-        title: "وسائل التواصل الاجتماعي والإعلام",
-        content:
-          "تُسهم وسائل الإعلام في توعية المجتمع من خلال تقديم محتوى تثقيفي، وعرض برامج إرشادية، ونشر معلومات تساعد الأسر والمعلمين على التعامل الصحيح مع الأطفال.",
-      },
-    ],
+    sections: adhdSections,
   },
 ];
+
+// Group sections into thematic tabs
+const groupSections = (sections: Section[]) => ({
+  medical: sections.slice(0, 4), // الأسباب، التغذية، المقاييس، الاختبارات
+  support: sections.slice(4, 7), // الأسرة، المدرسة، المجتمع
+  treatment: sections.slice(7, 10), // العلاج، الأنشطة، الإعلام
+});
 
 const Library = () => {
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -175,25 +115,39 @@ const Library = () => {
         </div>
 
         {!selected ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             {disabilities.map((d) => (
               <button
                 key={d.id}
                 onClick={() => setSelectedId(d.id)}
-                className={`p-6 rounded-2xl ${d.color} border border-border text-right card-hover group`}
+                className={`relative overflow-hidden p-8 rounded-3xl ${d.color} border border-border text-right card-hover group`}
               >
-                <div className="text-4xl mb-3">{d.emoji}</div>
-                <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">{d.title}</h3>
-                <p className="text-sm text-muted-foreground line-clamp-3">{d.definition}</p>
-                <div className="flex items-center gap-1 mt-4 text-primary text-sm font-medium">
-                  اقرأ المزيد
-                  <ChevronLeft className="w-4 h-4" />
+                <div className="absolute -top-6 -left-6 text-9xl opacity-10 group-hover:opacity-20 transition-opacity">
+                  {d.emoji}
+                </div>
+                <div className="relative">
+                  <div className="text-5xl mb-4">{d.emoji}</div>
+                  <h3 className="text-2xl font-bold mb-3 group-hover:text-primary transition-colors">
+                    {d.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed line-clamp-4 mb-4">
+                    {d.definition}
+                  </p>
+                  <div className="inline-flex items-center gap-1 text-primary text-sm font-medium bg-card/70 px-4 py-2 rounded-full">
+                    {d.layout === "cards" ? (
+                      <Sparkles className="w-4 h-4" />
+                    ) : (
+                      <Zap className="w-4 h-4" />
+                    )}
+                    اقرأ المزيد
+                    <ChevronLeft className="w-4 h-4" />
+                  </div>
                 </div>
               </button>
             ))}
           </div>
         ) : (
-          <div className="max-w-3xl mx-auto">
+          <div className="max-w-5xl mx-auto">
             <button
               onClick={() => setSelectedId(null)}
               className="flex items-center gap-2 text-primary hover:underline mb-6 font-medium"
@@ -211,22 +165,11 @@ const Library = () => {
               <p className="text-foreground/80 leading-relaxed text-lg">{selected.definition}</p>
             </div>
 
-            <div className="space-y-6">
-              {selected.sections.map((s, i) => (
-                <SectionCard key={i} icon={s.icon} title={s.title} content={s.content} />
-              ))}
-            </div>
-
-            <div className="mt-8 p-6 rounded-2xl border border-border bg-card flex items-center gap-4">
-              <FileText className="w-8 h-8 text-primary flex-shrink-0" />
-              <div>
-                <h4 className="font-bold mb-1">دليل PDF</h4>
-                <p className="text-sm text-muted-foreground">حمّل الدليل الشامل عن {selected.title} (نموذج تجريبي)</p>
-              </div>
-              <button className="mr-auto bg-primary/10 text-primary px-4 py-2 rounded-xl text-sm font-medium hover:bg-primary/20 transition-colors">
-                تحميل
-              </button>
-            </div>
+            {selected.layout === "cards" ? (
+              <CardsLayout sections={selected.sections} />
+            ) : (
+              <TimelineLayout sections={selected.sections} />
+            )}
           </div>
         )}
       </div>
@@ -234,15 +177,88 @@ const Library = () => {
   );
 };
 
-const SectionCard = ({ icon: Icon, title, content }: { icon: any; title: string; content: string }) => (
-  <div className="p-6 rounded-2xl border border-border bg-card">
-    <div className="flex items-center gap-3 mb-3">
-      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-        <Icon className="w-5 h-5 text-primary" />
-      </div>
-      <h3 className="text-xl font-bold">{title}</h3>
+/* ASD: tabs + interactive cards layout */
+const CardsLayout = ({ sections }: { sections: Section[] }) => {
+  const grouped = groupSections(sections);
+
+  const renderGrid = (items: Section[]) => (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      {items.map((s, i) => (
+        <div
+          key={i}
+          className="p-6 rounded-2xl border border-border bg-card card-hover group"
+        >
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-secondary/15 text-secondary flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+              <s.icon className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold mb-2">{s.title}</h3>
+              <p className="text-muted-foreground leading-relaxed text-sm">{s.content}</p>
+            </div>
+          </div>
+        </div>
+      ))}
     </div>
-    <p className="text-muted-foreground leading-relaxed">{content}</p>
+  );
+
+  return (
+    <Tabs defaultValue="medical" className="w-full">
+      <TabsList className="grid w-full grid-cols-3 rounded-2xl h-auto p-1.5 bg-muted">
+        <TabsTrigger value="medical" className="rounded-xl py-3">
+          الجانب الطبي
+        </TabsTrigger>
+        <TabsTrigger value="support" className="rounded-xl py-3">
+          الدعم الاجتماعي
+        </TabsTrigger>
+        <TabsTrigger value="treatment" className="rounded-xl py-3">
+          العلاج والأنشطة
+        </TabsTrigger>
+      </TabsList>
+      <TabsContent value="medical" className="mt-6">
+        {renderGrid(grouped.medical)}
+      </TabsContent>
+      <TabsContent value="support" className="mt-6">
+        {renderGrid(grouped.support)}
+      </TabsContent>
+      <TabsContent value="treatment" className="mt-6">
+        {renderGrid(grouped.treatment)}
+      </TabsContent>
+    </Tabs>
+  );
+};
+
+/* ADHD: step-by-step timeline + accordion details */
+const TimelineLayout = ({ sections }: { sections: Section[] }) => (
+  <div className="relative">
+    {/* Vertical line on the right (RTL) */}
+    <div className="absolute right-6 top-2 bottom-2 w-0.5 bg-gradient-to-b from-accent via-primary to-secondary opacity-30" />
+
+    <Accordion type="single" collapsible defaultValue="step-0" className="space-y-4">
+      {sections.map((s, i) => (
+        <AccordionItem
+          key={i}
+          value={`step-${i}`}
+          className="border-0 bg-card rounded-2xl border border-border overflow-hidden pr-16 relative"
+        >
+          {/* Step circle */}
+          <div className="absolute right-0 top-4 w-12 h-12 rounded-full bg-gradient-to-br from-accent to-primary text-white flex items-center justify-center font-bold text-lg shadow-lg z-10">
+            {i + 1}
+          </div>
+          <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-muted/40 transition-colors">
+            <div className="flex items-center gap-3 text-right">
+              <div className="w-10 h-10 rounded-xl bg-accent/15 text-accent-foreground flex items-center justify-center flex-shrink-0">
+                <s.icon className="w-5 h-5" />
+              </div>
+              <h3 className="text-lg font-bold">{s.title}</h3>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent className="px-5 pb-5">
+            <p className="text-muted-foreground leading-relaxed pr-13">{s.content}</p>
+          </AccordionContent>
+        </AccordionItem>
+      ))}
+    </Accordion>
   </div>
 );
 
