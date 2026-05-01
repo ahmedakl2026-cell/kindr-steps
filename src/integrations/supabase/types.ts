@@ -113,21 +113,33 @@ export type Database = {
           author_id: string
           content: string
           created_at: string
+          how_helped: string | null
           id: string
+          problem: string | null
+          result: string | null
+          title: string | null
           updated_at: string
         }
         Insert: {
           author_id: string
           content: string
           created_at?: string
+          how_helped?: string | null
           id?: string
+          problem?: string | null
+          result?: string | null
+          title?: string | null
           updated_at?: string
         }
         Update: {
           author_id?: string
           content?: string
           created_at?: string
+          how_helped?: string | null
           id?: string
+          problem?: string | null
+          result?: string | null
+          title?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -177,6 +189,36 @@ export type Database = {
           id?: string
           invited_by?: string | null
           role?: Database["public"]["Enums"]["app_role"]
+        }
+        Relationships: []
+      }
+      kids_activities: {
+        Row: {
+          created_at: string
+          created_by: string
+          description: string | null
+          id: string
+          image_url: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          description?: string | null
+          id?: string
+          image_url: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          id?: string
+          image_url?: string
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }
