@@ -298,41 +298,76 @@ const KidsCorner = () => {
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {activities.map((a) => (
-                  <article
-                    key={a.id}
-                    className="group rounded-3xl overflow-hidden border border-border bg-card card-hover"
-                  >
-                    <div className="aspect-[4/3] overflow-hidden bg-muted">
-                      <img
-                        src={a.image_url}
-                        alt={a.title}
-                        loading="lazy"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-7">
+                {activities.map((a, idx) => {
+                  const palettes = [
+                    "from-khatwa-blue/80 via-khatwa-blue/40",
+                    "from-khatwa-green/80 via-khatwa-green/40",
+                    "from-khatwa-yellow/80 via-khatwa-yellow/40",
+                    "from-primary/80 via-primary/40",
+                  ];
+                  const tint = palettes[idx % palettes.length];
+                  return (
+                    <article
+                      key={a.id}
+                      tabIndex={0}
+                      className="group relative rounded-3xl overflow-hidden border-4 border-card shadow-md hover:shadow-2xl focus-within:shadow-2xl transition-all duration-500 hover:-translate-y-2 focus-within:-translate-y-2 cursor-pointer bg-card"
+                    >
+                      {/* Image */}
+                      <div className="aspect-[4/5] overflow-hidden bg-muted">
+                        <img
+                          src={a.image_url}
+                          alt={a.title}
+                          loading="lazy"
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 group-focus-within:scale-110"
+                        />
+                      </div>
+
+                      {/* Permanent gradient for title legibility */}
+                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-foreground/85 via-foreground/20 to-transparent" />
+
+                      {/* Hover color tint */}
+                      <div
+                        className={`pointer-events-none absolute inset-0 bg-gradient-to-tr ${tint} to-transparent opacity-0 group-hover:opacity-90 group-focus-within:opacity-90 transition-opacity duration-500 mix-blend-multiply`}
                       />
-                    </div>
-                    <div className="p-5">
-                      <div className="flex items-start justify-between gap-2 mb-2">
-                        <h3 className="font-bold text-lg leading-tight">{a.title}</h3>
-                        {isAdmin && (
-                          <button
-                            onClick={() => handleDelete(a)}
-                            className="text-muted-foreground hover:text-destructive transition-colors"
-                            aria-label="حذف"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+
+                      {/* Title (always visible) */}
+                      <div className="absolute inset-x-0 bottom-0 p-5 md:p-6 transition-transform duration-500 group-hover:translate-y-[-4px]">
+                        <h3
+                          className="text-2xl md:text-3xl font-extrabold text-white leading-tight drop-shadow-[0_3px_6px_rgba(0,0,0,0.5)]"
+                          style={{ textShadow: "0 2px 10px rgba(0,0,0,0.4)" }}
+                        >
+                          {a.title}
+                        </h3>
+                        {/* Description revealed on hover */}
+                        {a.description && (
+                          <p className="mt-2 text-sm md:text-base text-white/95 leading-relaxed max-h-0 opacity-0 group-hover:max-h-40 group-hover:opacity-100 group-focus-within:max-h-40 group-focus-within:opacity-100 overflow-hidden transition-all duration-500">
+                            {a.description}
+                          </p>
                         )}
                       </div>
-                      {a.description && (
-                        <p className="text-sm text-muted-foreground leading-relaxed">
-                          {a.description}
-                        </p>
+
+                      {/* Playful badge */}
+                      <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full w-12 h-12 flex items-center justify-center shadow-lg text-2xl rotate-[-8deg] group-hover:rotate-[8deg] transition-transform duration-500">
+                        {["🎨", "🧩", "🌟", "🎈", "🦋", "🌈"][idx % 6]}
+                      </div>
+
+                      {/* Admin delete */}
+                      {isAdmin && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(a);
+                          }}
+                          className="absolute top-4 left-4 bg-white/90 hover:bg-destructive hover:text-white text-destructive rounded-full w-10 h-10 flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300"
+                          aria-label="حذف"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       )}
-                    </div>
-                  </article>
-                ))}
+                    </article>
+                  );
+                })}
               </div>
             )}
           </section>
