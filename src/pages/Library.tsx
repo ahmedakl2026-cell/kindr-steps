@@ -102,6 +102,31 @@ const Library = () => {
 
   return (
     <Layout>
+      <div className="container mx-auto px-4 pt-8">
+        <div className="max-w-5xl mx-auto bg-card border border-border rounded-3xl px-6 py-6 md:px-10 md:py-8 shadow-sm">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-4">
+            {/* Left placeholder - logo */}
+            <div className="w-24 h-24 md:w-28 md:h-28 rounded-2xl border-2 border-dashed border-border bg-muted/30 flex items-center justify-center text-xs text-muted-foreground flex-shrink-0">
+              شعار
+            </div>
+
+            {/* Center placeholder - main title */}
+            <div className="flex-1 text-center px-2">
+              <div className="h-2 w-24 mx-auto mb-3 rounded-full bg-muted" />
+              <h2 className="text-xl md:text-2xl font-bold text-foreground tracking-wide">
+                العنوان الرئيسي
+              </h2>
+              <div className="h-2 w-16 mx-auto mt-3 rounded-full bg-muted" />
+            </div>
+
+            {/* Right placeholder - secondary logo/icon */}
+            <div className="w-24 h-24 md:w-28 md:h-28 rounded-2xl border-2 border-dashed border-border bg-muted/30 flex items-center justify-center text-xs text-muted-foreground flex-shrink-0">
+              شعار ثانوي
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="container mx-auto px-4 py-12">
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 bg-khatwa-light-green text-secondary rounded-full px-4 py-2 text-sm font-medium mb-4">
