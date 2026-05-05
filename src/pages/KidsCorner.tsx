@@ -11,7 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Star, Trophy, Smile, RotateCcw, ImagePlus, Trash2, Images } from "lucide-react";
+import { Star, Trophy, Smile, RotateCcw, ImagePlus, Trash2, Images, Heart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
