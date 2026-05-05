@@ -52,8 +52,26 @@ const KidsCorner = () => {
   const [description, setDescription] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [likeCounts, setLikeCounts] = useState<Record<string, number>>({});
+  const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
 
   const isAdmin = role === "admin";
+
+  const fetchLikes = async (activityIds: string[]) => {
+    if (activityIds.length === 0) return;
+    const { data } = await supabase
+      .from("activity_likes")
+      .select("activity_id, user_id")
+      .in("activity_id", activityIds);
+    const counts: Record<string, number> = {};
+    const mine = new Set<string>();
+    (data || []).forEach((row: any) => {
+      counts[row.activity_id] = (counts[row.activity_id] || 0) + 1;
+      if (user && row.user_id === user.id) mine.add(row.activity_id);
+    });
+    setLikeCounts(counts);
+    setLikedIds(mine);
+  };
 
   const fetchActivities = async () => {
     setLoadingGallery(true);
