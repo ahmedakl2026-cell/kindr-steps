@@ -80,13 +80,57 @@ const KidsCorner = () => {
       .select("id, title, description, image_url")
       .order("created_at", { ascending: false });
     if (error) toast.error("تعذر تحميل المعرض");
-    else setActivities(data || []);
+    else {
+      setActivities(data || []);
+      fetchLikes((data || []).map((a) => a.id));
+    }
     setLoadingGallery(false);
   };
 
   useEffect(() => {
     fetchActivities();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
+
+  const toggleLike = async (activityId: string) => {
+    if (!user) {
+      toast.error("سجّل الدخول للإعجاب");
+      return;
+    }
+    const isLiked = likedIds.has(activityId);
+    // optimistic update
+    const newLiked = new Set(likedIds);
+    const newCounts = { ...likeCounts };
+    if (isLiked) {
+      newLiked.delete(activityId);
+      newCounts[activityId] = Math.max(0, (newCounts[activityId] || 1) - 1);
+    } else {
+      newLiked.add(activityId);
+      newCounts[activityId] = (newCounts[activityId] || 0) + 1;
+    }
+    setLikedIds(newLiked);
+    setLikeCounts(newCounts);
+
+    if (isLiked) {
+      const { error } = await supabase
+        .from("activity_likes")
+        .delete()
+        .eq("activity_id", activityId)
+        .eq("user_id", user.id);
+      if (error) {
+        toast.error("تعذر إلغاء الإعجاب");
+        fetchLikes(activities.map((a) => a.id));
+      }
+    } else {
+      const { error } = await supabase
+        .from("activity_likes")
+        .insert({ activity_id: activityId, user_id: user.id });
+      if (error) {
+        toast.error("تعذر تسجيل الإعجاب");
+        fetchLikes(activities.map((a) => a.id));
+      }
+    }
+  };
 
   const handleFlip = (id: number) => {
     if (selected.length === 2) return;
