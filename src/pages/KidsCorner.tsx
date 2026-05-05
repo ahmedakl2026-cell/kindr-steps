@@ -414,6 +414,27 @@ const KidsCorner = () => {
                         {["🎨", "🧩", "🌟", "🎈", "🦋", "🌈"][idx % 6]}
                       </div>
 
+                      {/* Like button */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleLike(a.id);
+                        }}
+                        className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm hover:bg-white rounded-full h-10 px-3 flex items-center gap-1.5 shadow-lg transition-all duration-300 hover:scale-110"
+                        aria-label={likedIds.has(a.id) ? "إلغاء الإعجاب" : "أعجبني"}
+                      >
+                        <Heart
+                          className={`w-5 h-5 transition-colors ${
+                            likedIds.has(a.id)
+                              ? "fill-destructive text-destructive"
+                              : "text-foreground/70"
+                          }`}
+                        />
+                        <span className="text-sm font-bold text-foreground">
+                          {likeCounts[a.id] || 0}
+                        </span>
+                      </button>
+
                       {/* Admin delete */}
                       {isAdmin && (
                         <button
@@ -421,7 +442,7 @@ const KidsCorner = () => {
                             e.stopPropagation();
                             handleDelete(a);
                           }}
-                          className="absolute top-4 left-4 bg-white/90 hover:bg-destructive hover:text-white text-destructive rounded-full w-10 h-10 flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300"
+                          className="absolute bottom-4 left-4 bg-white/90 hover:bg-destructive hover:text-white text-destructive rounded-full w-10 h-10 flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 z-10"
                           aria-label="حذف"
                         >
                           <Trash2 className="w-4 h-4" />
