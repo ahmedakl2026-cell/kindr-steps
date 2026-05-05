@@ -11,7 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Star, Trophy, Smile, RotateCcw, ImagePlus, Trash2, Images } from "lucide-react";
+import { Star, Trophy, Smile, RotateCcw, ImagePlus, Trash2, Images, Heart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -52,8 +52,26 @@ const KidsCorner = () => {
   const [description, setDescription] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [likeCounts, setLikeCounts] = useState<Record<string, number>>({});
+  const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
 
   const isAdmin = role === "admin";
+
+  const fetchLikes = async (activityIds: string[]) => {
+    if (activityIds.length === 0) return;
+    const { data } = await supabase
+      .from("activity_likes")
+      .select("activity_id, user_id")
+      .in("activity_id", activityIds);
+    const counts: Record<string, number> = {};
+    const mine = new Set<string>();
+    (data || []).forEach((row: any) => {
+      counts[row.activity_id] = (counts[row.activity_id] || 0) + 1;
+      if (user && row.user_id === user.id) mine.add(row.activity_id);
+    });
+    setLikeCounts(counts);
+    setLikedIds(mine);
+  };
 
   const fetchActivities = async () => {
     setLoadingGallery(true);
@@ -62,13 +80,57 @@ const KidsCorner = () => {
       .select("id, title, description, image_url")
       .order("created_at", { ascending: false });
     if (error) toast.error("تعذر تحميل المعرض");
-    else setActivities(data || []);
+    else {
+      setActivities(data || []);
+      fetchLikes((data || []).map((a) => a.id));
+    }
     setLoadingGallery(false);
   };
 
   useEffect(() => {
     fetchActivities();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
+
+  const toggleLike = async (activityId: string) => {
+    if (!user) {
+      toast.error("سجّل الدخول للإعجاب");
+      return;
+    }
+    const isLiked = likedIds.has(activityId);
+    // optimistic update
+    const newLiked = new Set(likedIds);
+    const newCounts = { ...likeCounts };
+    if (isLiked) {
+      newLiked.delete(activityId);
+      newCounts[activityId] = Math.max(0, (newCounts[activityId] || 1) - 1);
+    } else {
+      newLiked.add(activityId);
+      newCounts[activityId] = (newCounts[activityId] || 0) + 1;
+    }
+    setLikedIds(newLiked);
+    setLikeCounts(newCounts);
+
+    if (isLiked) {
+      const { error } = await supabase
+        .from("activity_likes")
+        .delete()
+        .eq("activity_id", activityId)
+        .eq("user_id", user.id);
+      if (error) {
+        toast.error("تعذر إلغاء الإعجاب");
+        fetchLikes(activities.map((a) => a.id));
+      }
+    } else {
+      const { error } = await supabase
+        .from("activity_likes")
+        .insert({ activity_id: activityId, user_id: user.id });
+      if (error) {
+        toast.error("تعذر تسجيل الإعجاب");
+        fetchLikes(activities.map((a) => a.id));
+      }
+    }
+  };
 
   const handleFlip = (id: number) => {
     if (selected.length === 2) return;
@@ -352,6 +414,27 @@ const KidsCorner = () => {
                         {["🎨", "🧩", "🌟", "🎈", "🦋", "🌈"][idx % 6]}
                       </div>
 
+                      {/* Like button */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleLike(a.id);
+                        }}
+                        className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm hover:bg-white rounded-full h-10 px-3 flex items-center gap-1.5 shadow-lg transition-all duration-300 hover:scale-110"
+                        aria-label={likedIds.has(a.id) ? "إلغاء الإعجاب" : "أعجبني"}
+                      >
+                        <Heart
+                          className={`w-5 h-5 transition-colors ${
+                            likedIds.has(a.id)
+                              ? "fill-destructive text-destructive"
+                              : "text-foreground/70"
+                          }`}
+                        />
+                        <span className="text-sm font-bold text-foreground">
+                          {likeCounts[a.id] || 0}
+                        </span>
+                      </button>
+
                       {/* Admin delete */}
                       {isAdmin && (
                         <button
@@ -359,7 +442,7 @@ const KidsCorner = () => {
                             e.stopPropagation();
                             handleDelete(a);
                           }}
-                          className="absolute top-4 left-4 bg-white/90 hover:bg-destructive hover:text-white text-destructive rounded-full w-10 h-10 flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300"
+                          className="absolute bottom-4 left-4 bg-white/90 hover:bg-destructive hover:text-white text-destructive rounded-full w-10 h-10 flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 z-10"
                           aria-label="حذف"
                         >
                           <Trash2 className="w-4 h-4" />
