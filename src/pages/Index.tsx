@@ -75,8 +75,59 @@ const intro = [
   },
 ];
 
+const testimonials = [
+  {
+    name: "أم يوسف",
+    role: "والدة طفل من ذوي طيف التوحد",
+    emoji: "👩‍👦",
+    title: "تواصل أفضل مع طفلي",
+    story:
+      "كنت أعاني في فهم احتياجات يوسف، ومن خلال مكتبة المعلومات والاستشارات على المنصة تعلمت كيف أتواصل معه بصبر وأسلوب مناسب. اليوم أصبح يعبّر عن مشاعره ويبتسم أكثر.",
+    color: "bg-khatwa-light-blue",
+  },
+  {
+    name: "أ. منى — معلمة تربية خاصة",
+    role: "معلمة في مدرسة دمج",
+    emoji: "👩‍🏫",
+    title: "أنشطة عملية داخل الفصل",
+    story:
+      "ساعدتني الأنشطة المقترحة في معرض الأنشطة على إدارة الفصل بشكل أفضل، خاصة مع الأطفال ذوي فرط الحركة. أصبح طلابي أكثر تفاعلًا وتركيزًا خلال الحصة.",
+    color: "bg-khatwa-light-green",
+  },
+  {
+    name: "أبو ليان",
+    role: "والد طفلة من ذوي فرط الحركة",
+    emoji: "👨‍👧",
+    title: "دعم نفسي وثقة بالنفس",
+    story:
+      "وجدت في مجتمع الدعم تجارب أسر مشابهة لتجربتي، وشعرت أنني لست وحدي. مع متابعة المتخصصين تحسّن أداء ليان الدراسي وزادت ثقتها بنفسها بشكل ملحوظ.",
+    color: "bg-khatwa-light-yellow",
+  },
+];
+
 const Index = () => (
   <Layout>
+    {/* Header with 3 logo placeholders */}
+    <header className="container mx-auto px-4 pt-8">
+      <div className="max-w-6xl mx-auto bg-card border border-border rounded-3xl px-6 py-6 md:px-10 md:py-7 shadow-sm">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-4">
+          <div className="w-24 h-24 md:w-28 md:h-28 rounded-2xl border-2 border-dashed border-border bg-muted/30 flex items-center justify-center text-xs text-muted-foreground flex-shrink-0">
+            الشعار الأول
+          </div>
+          <div className="flex-1 text-center px-2">
+            <div className="h-2 w-24 mx-auto mb-3 rounded-full bg-muted" />
+            <h2 className="text-xl md:text-2xl font-bold text-foreground tracking-wide">
+              منصة خطوة
+            </h2>
+            <div className="h-2 w-16 mx-auto mt-3 rounded-full bg-muted" />
+          </div>
+          <div className="w-24 h-24 md:w-28 md:h-28 rounded-2xl border-2 border-dashed border-border bg-muted/30 flex items-center justify-center text-xs text-muted-foreground flex-shrink-0">
+            الشعار الثاني
+          </div>
+        </div>
+      </div>
+    </header>
+
     {/* Hero */}
     <section className="bg-gradient-hero py-20 md:py-32 relative overflow-hidden">
       <div className="absolute top-10 right-10 text-7xl opacity-10 animate-float">🌟</div>
