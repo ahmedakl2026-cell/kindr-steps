@@ -159,24 +159,6 @@ const Index = () => {
         </div>
       </div>
     </header>
-      <div className="max-w-6xl mx-auto bg-card border border-border rounded-3xl px-6 py-6 md:px-10 md:py-7 shadow-sm">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-4">
-          <div className="w-24 h-24 md:w-28 md:h-28 rounded-2xl border-2 border-dashed border-border bg-muted/30 flex items-center justify-center text-xs text-muted-foreground flex-shrink-0">
-            الشعار الأول
-          </div>
-          <div className="flex-1 text-center px-2">
-            <div className="h-2 w-24 mx-auto mb-3 rounded-full bg-muted" />
-            <h2 className="text-xl md:text-2xl font-bold text-foreground tracking-wide">
-              منصة خطوة
-            </h2>
-            <div className="h-2 w-16 mx-auto mt-3 rounded-full bg-muted" />
-          </div>
-          <div className="w-24 h-24 md:w-28 md:h-28 rounded-2xl border-2 border-dashed border-border bg-muted/30 flex items-center justify-center text-xs text-muted-foreground flex-shrink-0">
-            الشعار الثاني
-          </div>
-        </div>
-      </div>
-    </header>
 
     {/* Hero */}
     <section className="bg-gradient-hero py-20 md:py-32 relative overflow-hidden">
