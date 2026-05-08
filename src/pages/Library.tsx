@@ -15,8 +15,9 @@ import {
   Tv,
   Sparkles,
   Zap,
+  Images,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -24,6 +25,9 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { ActivityManager } from "@/components/admin/ActivityManager";
 
 type Section = { icon: any; title: string; content: string };
 
