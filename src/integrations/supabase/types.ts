@@ -218,6 +218,7 @@ export type Database = {
           created_at: string
           created_by: string
           description: string | null
+          disability: string | null
           id: string
           image_url: string
           title: string
@@ -227,6 +228,7 @@ export type Database = {
           created_at?: string
           created_by: string
           description?: string | null
+          disability?: string | null
           id?: string
           image_url: string
           title: string
@@ -236,6 +238,7 @@ export type Database = {
           created_at?: string
           created_by?: string
           description?: string | null
+          disability?: string | null
           id?: string
           image_url?: string
           title?: string
@@ -305,6 +308,24 @@ export type Database = {
           phone?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      site_settings: {
+        Row: {
+          key: string
+          updated_at: string
+          value: string | null
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          value?: string | null
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          value?: string | null
         }
         Relationships: []
       }
