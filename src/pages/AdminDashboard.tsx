@@ -440,6 +440,35 @@ const AdminDashboard = () => {
             </div>
           </TabsContent>
 
+          {/* Media Management Tab */}
+          <TabsContent value="media">
+            <div className="space-y-6">
+              <div className="bg-card rounded-2xl border border-border p-6">
+                <HeaderLogosManager />
+              </div>
+
+              <div className="bg-card rounded-2xl border border-border p-6">
+                <ActivityManager
+                  disability={null}
+                  title="معرض ركن الأطفال (عام)"
+                  emptyHint="لا توجد صور في المعرض العام بعد"
+                />
+              </div>
+
+              <div className="bg-card rounded-2xl border border-border p-6">
+                <h3 className="text-lg font-bold mb-1">أنشطة اضطراب طيف التوحد 🧩</h3>
+                <p className="text-sm text-muted-foreground mb-4">تظهر داخل صفحة التوحد في مكتبة الإعاقات</p>
+                <ActivityManager disability="asd" title="" emptyHint="لا توجد أنشطة بعد" />
+              </div>
+
+              <div className="bg-card rounded-2xl border border-border p-6">
+                <h3 className="text-lg font-bold mb-1">أنشطة فرط الحركة وتشتت الانتباه ⚡</h3>
+                <p className="text-sm text-muted-foreground mb-4">تظهر داخل صفحة فرط الحركة في مكتبة الإعاقات</p>
+                <ActivityManager disability="adhd" title="" emptyHint="لا توجد أنشطة بعد" />
+              </div>
+            </div>
+          </TabsContent>
+
           {/* Profile Tab */}
           <TabsContent value="profile">
             <div className="bg-card rounded-2xl border border-border p-6 max-w-md">
