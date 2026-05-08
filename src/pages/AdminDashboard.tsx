@@ -22,7 +22,9 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { CheckCircle, XCircle, UserPlus, Shield, Stethoscope, Trash2, Users, Baby, UserCheck, Pencil } from "lucide-react";
+import { CheckCircle, XCircle, UserPlus, Shield, Stethoscope, Trash2, Users, Baby, UserCheck, Pencil, Image as ImageIcon } from "lucide-react";
+import { ActivityManager } from "@/components/admin/ActivityManager";
+import { HeaderLogosManager } from "@/components/admin/HeaderLogosManager";
 
 interface SpecialistRow {
   id: string;
