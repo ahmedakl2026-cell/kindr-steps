@@ -22,7 +22,9 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { CheckCircle, XCircle, UserPlus, Shield, Stethoscope, Trash2, Users, Baby, UserCheck, Pencil } from "lucide-react";
+import { CheckCircle, XCircle, UserPlus, Shield, Stethoscope, Trash2, Users, Baby, UserCheck, Pencil, Image as ImageIcon } from "lucide-react";
+import { ActivityManager } from "@/components/admin/ActivityManager";
+import { HeaderLogosManager } from "@/components/admin/HeaderLogosManager";
 
 interface SpecialistRow {
   id: string;
@@ -274,9 +276,12 @@ const AdminDashboard = () => {
         </div>
 
         <Tabs defaultValue="specialists" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 rounded-xl">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 rounded-xl h-auto">
             <TabsTrigger value="specialists" className="rounded-xl">طلبات المتخصصين</TabsTrigger>
             <TabsTrigger value="invitations" className="rounded-xl">الدعوات</TabsTrigger>
+            <TabsTrigger value="media" className="rounded-xl gap-1">
+              <ImageIcon className="w-4 h-4" /> إدارة الصور
+            </TabsTrigger>
             <TabsTrigger value="profile" className="rounded-xl">ملفي الشخصي</TabsTrigger>
           </TabsList>
 
@@ -431,6 +436,35 @@ const AdminDashboard = () => {
                     </TableBody>
                   </Table>
                 )}
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Media Management Tab */}
+          <TabsContent value="media">
+            <div className="space-y-6">
+              <div className="bg-card rounded-2xl border border-border p-6">
+                <HeaderLogosManager />
+              </div>
+
+              <div className="bg-card rounded-2xl border border-border p-6">
+                <ActivityManager
+                  disability={null}
+                  title="معرض ركن الأطفال (عام)"
+                  emptyHint="لا توجد صور في المعرض العام بعد"
+                />
+              </div>
+
+              <div className="bg-card rounded-2xl border border-border p-6">
+                <h3 className="text-lg font-bold mb-1">أنشطة اضطراب طيف التوحد 🧩</h3>
+                <p className="text-sm text-muted-foreground mb-4">تظهر داخل صفحة التوحد في مكتبة الإعاقات</p>
+                <ActivityManager disability="asd" title="" emptyHint="لا توجد أنشطة بعد" />
+              </div>
+
+              <div className="bg-card rounded-2xl border border-border p-6">
+                <h3 className="text-lg font-bold mb-1">أنشطة فرط الحركة وتشتت الانتباه ⚡</h3>
+                <p className="text-sm text-muted-foreground mb-4">تظهر داخل صفحة فرط الحركة في مكتبة الإعاقات</p>
+                <ActivityManager disability="adhd" title="" emptyHint="لا توجد أنشطة بعد" />
               </div>
             </div>
           </TabsContent>
