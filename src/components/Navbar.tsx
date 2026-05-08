@@ -81,6 +81,14 @@ const Navbar = () => {
           </Button>
           {user ? (
             <div className="flex items-center gap-2">
+              {role === "admin" && (
+                <Link to="/admin">
+                  <Button className="rounded-xl gap-2 bg-primary text-primary-foreground hover:bg-primary/90 shadow-md">
+                    <Settings className="w-4 h-4" />
+                    لوحة التحكم
+                  </Button>
+                </Link>
+              )}
               <span className="text-sm font-medium text-muted-foreground">{profile?.full_name}</span>
               <Button variant="outline" className="rounded-xl gap-2" onClick={handleSignOut}>
                 <LogOut className="w-4 h-4" />
