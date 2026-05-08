@@ -65,16 +65,7 @@ const KidsCorner = () => {
   const fetchActivities = async () => {
     setLoadingGallery(true);
     
-    if (localStorage.getItem("fake_admin") === "true") {
-      const stored = localStorage.getItem("mock_activities_all");
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        setActivities(parsed);
-        fetchLikes(parsed.map((a: Activity) => a.id));
-        setLoadingGallery(false);
-        return;
-      }
-    }
+
 
     const { data, error } = await supabase
       .from("kids_activities")
@@ -139,29 +130,7 @@ const KidsCorner = () => {
     }
     setUploading(true);
     
-    if (user.id === "demo-admin") {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const url = reader.result as string;
-        const newActivity: Activity = {
-          id: Math.random().toString(),
-          title: title.trim(),
-          description: description.trim() || null,
-          image_url: url,
-        };
-        const newActivities = [newActivity, ...activities];
-        setActivities(newActivities);
-        localStorage.setItem("mock_activities_all", JSON.stringify(newActivities));
-        toast.success("تمت إضافة النشاط (وضع تجريبي)");
-        setTitle("");
-        setDescription("");
-        setFile(null);
-        setDialogOpen(false);
-        setUploading(false);
-      };
-      reader.readAsDataURL(file);
-      return;
-    }
+
 
     const ext = file.name.split(".").pop();
     const path = `${user.id}/${Date.now()}.${ext}`;
@@ -196,13 +165,7 @@ const KidsCorner = () => {
   const handleDelete = async (a: Activity) => {
     if (!confirm(`حذف النشاط "${a.title}"؟`)) return;
     
-    if (user?.id === "demo-admin") {
-      const newActivities = activities.filter(item => item.id !== a.id);
-      setActivities(newActivities);
-      localStorage.setItem("mock_activities_all", JSON.stringify(newActivities));
-      toast.success("تم الحذف (وضع تجريبي)");
-      return;
-    }
+
 
     const { error } = await supabase.from("kids_activities").delete().eq("id", a.id);
     if (error) toast.error("تعذر الحذف");

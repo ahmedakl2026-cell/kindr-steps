@@ -118,26 +118,12 @@ const Index = () => {
       .select("key, value")
       .in("key", ["header_logo_right", "header_logo_left", "header_title"])
       .then(({ data }) => {
-        const isFake = localStorage.getItem("fake_admin") === "true";
         (data || []).forEach((row: any) => {
           let val = row.value;
-          if (isFake) {
-             const mockVal = localStorage.getItem(`mock_setting_${row.key}`);
-             if (mockVal !== null) val = mockVal;
-          }
           if (row.key === "header_logo_right") setLogoRight(val || "");
           if (row.key === "header_logo_left") setLogoLeft(val || "");
           if (row.key === "header_title" && val) setHeaderTitle(val);
         });
-        
-        if (isFake) {
-          const r = localStorage.getItem("mock_setting_header_logo_right");
-          if (r !== null) setLogoRight(r);
-          const l = localStorage.getItem("mock_setting_header_logo_left");
-          if (l !== null) setLogoLeft(l);
-          const t = localStorage.getItem("mock_setting_header_title");
-          if (t !== null && t) setHeaderTitle(t);
-        }
       });
   }, []);
 

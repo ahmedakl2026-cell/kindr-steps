@@ -26,12 +26,7 @@ export const HeaderLogosManager = () => {
     const map: Record<string, string> = {};
     (data || []).forEach((row: any) => { map[row.key] = row.value || ""; });
     
-    if (localStorage.getItem("fake_admin") === "true") {
-      SETTING_KEYS.forEach((s) => {
-        const mockVal = localStorage.getItem(`mock_setting_${s.key}`);
-        if (mockVal !== null) map[s.key] = mockVal;
-      });
-    }
+
 
     setValues(map);
     setLoading(false);
@@ -41,40 +36,6 @@ export const HeaderLogosManager = () => {
 
   const uploadFile = async (file: File): Promise<string | null> => {
     if (!user) return null;
-    if (user.id === "demo-admin") {
-      return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          const img = new Image();
-          img.onload = () => {
-            const canvas = document.createElement("canvas");
-            const MAX_WIDTH = 400;
-            const MAX_HEIGHT = 400;
-            let width = img.width;
-            let height = img.height;
-
-            if (width > height) {
-              if (width > MAX_WIDTH) {
-                height *= MAX_WIDTH / width;
-                width = MAX_WIDTH;
-              }
-            } else {
-              if (height > MAX_HEIGHT) {
-                width *= MAX_HEIGHT / height;
-                height = MAX_HEIGHT;
-              }
-            }
-            canvas.width = width;
-            canvas.height = height;
-            const ctx = canvas.getContext("2d");
-            ctx?.drawImage(img, 0, 0, width, height);
-            resolve(canvas.toDataURL("image/jpeg", 0.7));
-          };
-          img.src = reader.result as string;
-        };
-        reader.readAsDataURL(file);
-      });
-    }
     const ext = file.name.split(".").pop();
     const path = `site/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
     const { error } = await supabase.storage.from("kids-activities").upload(path, file, { cacheControl: "3600", upsert: false });
@@ -97,18 +58,7 @@ export const HeaderLogosManager = () => {
         value = url;
       }
       
-      if (user?.id === "demo-admin") {
-        try {
-          localStorage.setItem(`mock_setting_${key}`, value);
-          setValues(p => ({ ...p, [key]: value }));
-          setFiles(p => ({ ...p, [key]: null }));
-          toast.success("تم الحفظ (وضع تجريبي)");
-        } catch (e) {
-          console.error(e);
-          toast.error("مساحة الذاكرة ممتلئة! يرجى استخدام صورة أصغر أو مسح بعض البيانات.");
-        }
-        return;
-      }
+
 
       const { error } = await supabase
         .from("site_settings")
@@ -127,12 +77,7 @@ export const HeaderLogosManager = () => {
   const handleClear = async (key: string) => {
     if (!confirm("إزالة هذا الشعار؟")) return;
     
-    if (user?.id === "demo-admin") {
-      setValues(p => ({ ...p, [key]: "" }));
-      localStorage.setItem(`mock_setting_${key}`, "");
-      toast.success("تمت الإزالة (وضع تجريبي)");
-      return;
-    }
+
 
     const { error } = await supabase.from("site_settings").upsert({ key, value: "" }, { onConflict: "key" });
     if (error) toast.error("تعذر الحذف");

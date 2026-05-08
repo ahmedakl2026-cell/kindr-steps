@@ -34,12 +34,6 @@ const Login = () => {
     setLoading(true);
 
     try {
-      if (!isRegister && email === "admin@admin.com" && password === "admin") {
-        localStorage.setItem("fake_admin", "true");
-        toast.success("تم تسجيل الدخول كمدير (تجريبي)!");
-        window.location.href = "/admin";
-        return;
-      }
 
       if (isRegister) {
         const { error } = await supabase.auth.signUp({
