@@ -12,7 +12,6 @@ const navLinks = [
   { label: "لوحة الأهل", path: "/parent-dashboard", requireAuth: true },
   { label: "مجتمع الدعم", path: "/community", requireAuth: true },
   { label: "الرسائل", path: "/messages", requireAuth: true },
-  { label: "لوحة الإدارة", path: "/admin", requireAuth: true, requireRole: "admin" as const },
   { label: "فريق العمل", path: "/team" },
 ];
 
