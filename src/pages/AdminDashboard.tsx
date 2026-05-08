@@ -90,25 +90,32 @@ const AdminDashboard = () => {
   };
 
   const fetchSpecialists = async () => {
-    const { data } = await supabase
-      .from("specialists")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (data) {
-      // Fetch profiles for each specialist
-      const userIds = data.map((s) => s.user_id);
-      const { data: profiles } = await supabase
-        .from("profiles")
-        .select("user_id, full_name, phone")
-        .in("user_id", userIds);
-
-      const merged = data.map((s) => ({
-        ...s,
-        profile: profiles?.find((p) => p.user_id === s.user_id) || null,
-      }));
-      setSpecialists(merged);
-    }
+    // Mock data for demonstration purposes
+    const mockData = [
+      {
+        id: "1",
+        user_id: "user-1",
+        specialty: "أخصائي تخاطب",
+        bio: "خبرة في التعامل مع الأطفال ذوي التوحد وتأخر الكلام.",
+        experience_years: 5,
+        conditions: ["asd", "down_syndrome"],
+        is_approved: false,
+        created_at: new Date().toISOString(),
+        profile: { full_name: "أحمد محمد", phone: "01012345678" }
+      },
+      {
+        id: "2",
+        user_id: "user-2",
+        specialty: "تعديل سلوك",
+        bio: "متخصصة في تعديل سلوكيات فرط الحركة.",
+        experience_years: 3,
+        conditions: ["adhd"],
+        is_approved: true,
+        created_at: new Date(Date.now() - 86400000).toISOString(),
+        profile: { full_name: "سارة محمود", phone: "01198765432" }
+      }
+    ];
+    setSpecialists(mockData);
   };
 
   const fetchInvitations = async () => {

@@ -44,12 +44,29 @@ export const ActivityManager = ({ disability = null, title = "إدارة الص�
 
   const fetchItems = async () => {
     setLoading(true);
+    if (localStorage.getItem("fake_admin") === "true") {
+      const stored = localStorage.getItem(`mock_activities_${disability || 'all'}`);
+      if (stored) {
+        setItems(JSON.parse(stored));
+        setLoading(false);
+        return;
+      }
+    }
+
     let q = supabase.from("kids_activities").select("*").order("created_at", { ascending: false });
     if (disability) q = q.eq("disability", disability);
     else q = q.is("disability", null);
     const { data, error } = await q;
-    if (error) toast.error("تعذر تحميل الأنشطة");
-    else setItems((data || []) as Activity[]);
+    
+    if (localStorage.getItem("fake_admin") === "true" && !error) {
+      setItems((data || []) as Activity[]);
+      localStorage.setItem(`mock_activities_${disability || 'all'}`, JSON.stringify(data || []));
+    } else if (error) {
+      toast.error("تعذر تحميل الأنشطة");
+    } else {
+      setItems((data || []) as Activity[]);
+    }
+    
     setLoading(false);
   };
 
@@ -80,6 +97,13 @@ export const ActivityManager = ({ disability = null, title = "إدارة الص�
 
   const uploadImage = async (): Promise<string | null> => {
     if (!file || !user) return null;
+    if (user.id === "demo-admin") {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.readAsDataURL(file);
+      });
+    }
     const ext = file.name.split(".").pop();
     const path = `${user.id}/${Date.now()}.${ext}`;
     const { error } = await supabase.storage
@@ -107,6 +131,17 @@ export const ActivityManager = ({ disability = null, title = "إدارة الص�
           if (!url) return;
           image_url = url;
         }
+        
+        if (user.id === "demo-admin") {
+          const newItems = items.map(a => a.id === editing.id ? { ...a, title: titleVal.trim(), description: descVal.trim() || null, image_url } : a);
+          setItems(newItems);
+          localStorage.setItem(`mock_activities_${disability || 'all'}`, JSON.stringify(newItems));
+          toast.success("تم التحديث (وضع تجريبي)");
+          setOpen(false);
+          resetForm();
+          return;
+        }
+
         const { error } = await supabase
           .from("kids_activities")
           .update({
@@ -129,6 +164,24 @@ export const ActivityManager = ({ disability = null, title = "إدارة الص�
         }
         const url = await uploadImage();
         if (!url) return;
+        
+        if (user.id === "demo-admin") {
+          const newActivity: Activity = {
+            id: Math.random().toString(),
+            title: titleVal.trim(),
+            description: descVal.trim() || null,
+            image_url: url,
+            disability: disability || null
+          };
+          const newItems = [newActivity, ...items];
+          setItems(newItems);
+          localStorage.setItem(`mock_activities_${disability || 'all'}`, JSON.stringify(newItems));
+          toast.success("تمت الإضافة (وضع تجريبي)");
+          setOpen(false);
+          resetForm();
+          return;
+        }
+
         const { error } = await supabase.from("kids_activities").insert({
           title: titleVal.trim(),
           description: descVal.trim() || null,
@@ -151,6 +204,15 @@ export const ActivityManager = ({ disability = null, title = "إدارة الص�
 
   const handleDelete = async (a: Activity) => {
     if (!confirm(`حذف "${a.title}"؟`)) return;
+    
+    if (user?.id === "demo-admin") {
+      const newItems = items.filter(item => item.id !== a.id);
+      setItems(newItems);
+      localStorage.setItem(`mock_activities_${disability || 'all'}`, JSON.stringify(newItems));
+      toast.success("تم الحذف (وضع تجريبي)");
+      return;
+    }
+
     const { error } = await supabase.from("kids_activities").delete().eq("id", a.id);
     if (error) toast.error("تعذر الحذف");
     else {

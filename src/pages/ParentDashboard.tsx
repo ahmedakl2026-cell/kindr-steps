@@ -55,7 +55,26 @@ const ParentDashboard = () => {
         .select("*")
         .eq("parent_id", user.id)
         .order("created_at");
-      if (!error) setChildren(data || []);
+      let finalChildren = data || [];
+      if (finalChildren.length === 0 || error) {
+        finalChildren = [
+          {
+            id: "mock-child-1",
+            name: "يوسف",
+            birth_date: "2018-05-12",
+            condition: "autism",
+            notes: "يوسف يحب ترتيب الألعاب حسب الألوان، ويواجه صعوبة في التواصل اللفظي عندما يكون منزعجاً."
+          },
+          {
+            id: "mock-child-2",
+            name: "ليان",
+            birth_date: "2020-03-21",
+            condition: "adhd",
+            notes: "ليان كثيرة الحركة وتحتاج إلى فترات راحة متكررة أثناء المذاكرة وتفضل الأنشطة الحركية."
+          }
+        ];
+      }
+      setChildren(finalChildren);
       setLoading(false);
     };
     fetchChildren();

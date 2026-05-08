@@ -74,7 +74,43 @@ const Community = () => {
         };
       })
     );
-    setPosts(enriched);
+    let finalPosts = enriched;
+    if (finalPosts.length === 0) {
+      finalPosts = [
+        {
+          id: "mock-post-1", title: "تحسن ملحوظ في تواصل طفلي", problem: "كان طفلي (مصاب بالتوحد) يواجه صعوبة كبيرة في التعبير عن احتياجاته الأساسية، مما كان يسبب له نوبات غضب مستمرة.", how_helped: "استخدمت بطاقات التواصل البصري الموجودة في ركن الأنشطة، وتواصلت مع د. أحمد محمود الذي وجهني لبعض التمارين اليومية.", result: "أصبح طفلي الآن قادراً على طلب الماء والطعام باستخدام البطاقات، وقلت نوبات الغضب بنسبة كبيرة ولله الحمد.", content: "", created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), author_id: "mock-author-1", author_name: "أم يوسف", likes_count: 15, comments_count: 4, is_liked: false
+        },
+        {
+          id: "mock-post-2", title: "تجربتي مع فرط الحركة بالمدرسة", problem: "كانت ابنتي تعاني من تشتت الانتباه داخل الفصل، والمعلمة كانت تشتكي دائماً من حركتها الزائدة وعدم جلوسها في مكانها.", how_helped: "قرأت مقالات (مكتبة الإعاقات) عن فرط الحركة، وحجزت استشارة مع أ. سارة كمال. طبقنا استراتيجيات (المكافآت والمهام القصيرة).", result: "تحسن أداؤها الأكاديمي، وأصبحت المعلمة تمدح تركيزها. أنا فخورة جداً بتقدمها.", content: "", created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), author_id: "mock-author-2", author_name: "أم ليان", likes_count: 32, comments_count: 8, is_liked: true
+        },
+        {
+          id: "mock-post-3", title: "تطوير المهارات الحركية الدقيقة", problem: "طفلي (متلازمة داون) كان يجد صعوبة في الإمساك بالقلم بشكل صحيح واستخدام المقص.", how_helped: "من خلال معرض الأنشطة، بدأت بتطبيق ألعاب العجين والصلصال وتصنيف الأزرار يومياً.", result: "أصبح قادراً على مسك القلم بوضعية صحيحة وبدأ في تلوين الرسومات بدقة أفضل.", content: "", created_at: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(), author_id: "mock-author-3", author_name: "أبو خالد", likes_count: 8, comments_count: 1, is_liked: false
+        },
+        {
+          id: "mock-post-4", title: "التغلب على الخوف من الأصوات المرتفعة", problem: "ابني كان ينهار بالبكاء عند سماع صوت المكنسة الكهربائية أو الخلاط.", how_helped: "نصحني الأخصائي بتعريضه التدريجي للأصوات مع ربطها بمعززات إيجابية.", result: "لم يعد يبكي، بل أصبح يساعدني في تشغيل المكنسة كجزء من اللعب.", content: "", created_at: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString(), author_id: "mock-author-4", author_name: "أم فهد", likes_count: 22, comments_count: 5, is_liked: true
+        },
+        {
+          id: "mock-post-5", title: "تعديل سلوك العض والضرب", problem: "ابنتي كانت تلجأ للعض والضرب عندما لا تستطيع التعبير عما تريد.", how_helped: "استخدمنا استراتيجية (القصص الاجتماعية) المتاحة في المكتبة لتعليمها بدائل مقبولة للتعبير عن الغضب.", result: "توقفت عن العض تقريباً، وبدأت تستخدم كلمات بسيطة للتعبير عن مشاعرها.", content: "", created_at: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(), author_id: "mock-author-5", author_name: "أم سارة", likes_count: 45, comments_count: 12, is_liked: false
+        },
+        {
+          id: "mock-post-6", title: "الاستقلالية في ارتداء الملابس", problem: "صعوبة في تعلم ارتداء الملابس وربط الحذاء بسبب ضعف العضلات الدقيقة.", how_helped: "تدربنا على أنشطة (لوحات المهارات اليومية) وتجزئة المهمة لخطوات صغيرة مدعمة بصور.", result: "أصبح يرتدي قميصه وبنطاله بنفسه دون مساعدة، ونحن نعمل الآن على ربط الحذاء.", content: "", created_at: new Date(Date.now() - 18 * 24 * 60 * 60 * 1000).toISOString(), author_id: "mock-author-6", author_name: "أبو تركي", likes_count: 11, comments_count: 2, is_liked: false
+        },
+        {
+          id: "mock-post-7", title: "الاندماج مع الأطفال في الحديقة", problem: "كان يرفض اللعب مع أقرانه وينعزل بمفرده في زاوية الحديقة.", how_helped: "توجيهات أخصائي السلوك ساعدتنا في تعليمه كيفية (المبادرة باللعب) باستخدام تبادل الأدوار.", result: "اليوم لعب لأول مرة مع طفلين آخرين في لعبة المراجيح وشاركهم الضحك.", content: "", created_at: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(), author_id: "mock-author-7", author_name: "أم عبدالرحمن", likes_count: 67, comments_count: 15, is_liked: true
+        },
+        {
+          id: "mock-post-8", title: "تحسن جودة النوم", problem: "معاناة شديدة مع الأرق وصعوبة الدخول في النوم، واستيقاظ متكرر.", how_helped: "تطبيق روتين بصري صارم قبل النوم وتقليل المشتتات الحسية كما هو مذكور في قسم التوحد بالمكتبة.", result: "أصبح ينام بشكل أسرع واستمرارية نومه تحسنت بشكل كبير مما انعكس على مزاجه نهاراً.", content: "", created_at: new Date(Date.now() - 22 * 24 * 60 * 60 * 1000).toISOString(), author_id: "mock-author-8", author_name: "أبو حور", likes_count: 29, comments_count: 6, is_liked: false
+        },
+        {
+          id: "mock-post-9", title: "نطق الكلمة الأولى!", problem: "تأخر شديد في النطق، حتى عمر 4 سنوات لم ينطق أي كلمة واضحة.", how_helped: "جلسات التخاطب المستمرة وتمارين النفخ والمضغ الموصى بها.", result: "أخيراً.. اليوم نطق كلمة (ماما) بوضوح لأول مرة! شعور لا يوصف.", content: "", created_at: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString(), author_id: "mock-author-9", author_name: "أم ديم", likes_count: 150, comments_count: 45, is_liked: true
+        },
+        {
+          id: "mock-post-10", title: "اتباع التعليمات المتسلسلة", problem: "ينسى التعليمات المكونة من خطوتين أو أكثر (مثل: هات الحذاء والبس معطفك).", how_helped: "استخدام الألعاب التعليمية في ركن الأطفال التي تتطلب ذاكرة وتتبع خطوات.", result: "تطورت ذاكرته العاملة وأصبح يستجيب للتعليمات المزدوجة بتركيز أعلى.", content: "", created_at: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(), author_id: "mock-author-10", author_name: "أم ماجد", likes_count: 18, comments_count: 3, is_liked: false
+        }
+      ];
+    }
+
+    setPosts(finalPosts);
     setLoading(false);
   };
 

@@ -118,11 +118,26 @@ const Index = () => {
       .select("key, value")
       .in("key", ["header_logo_right", "header_logo_left", "header_title"])
       .then(({ data }) => {
+        const isFake = localStorage.getItem("fake_admin") === "true";
         (data || []).forEach((row: any) => {
-          if (row.key === "header_logo_right") setLogoRight(row.value || "");
-          if (row.key === "header_logo_left") setLogoLeft(row.value || "");
-          if (row.key === "header_title" && row.value) setHeaderTitle(row.value);
+          let val = row.value;
+          if (isFake) {
+             const mockVal = localStorage.getItem(`mock_setting_${row.key}`);
+             if (mockVal !== null) val = mockVal;
+          }
+          if (row.key === "header_logo_right") setLogoRight(val || "");
+          if (row.key === "header_logo_left") setLogoLeft(val || "");
+          if (row.key === "header_title" && val) setHeaderTitle(val);
         });
+        
+        if (isFake) {
+          const r = localStorage.getItem("mock_setting_header_logo_right");
+          if (r !== null) setLogoRight(r);
+          const l = localStorage.getItem("mock_setting_header_logo_left");
+          if (l !== null) setLogoLeft(l);
+          const t = localStorage.getItem("mock_setting_header_title");
+          if (t !== null && t) setHeaderTitle(t);
+        }
       });
   }, []);
 
@@ -140,13 +155,15 @@ const Index = () => {
               <span className="text-xs text-muted-foreground">الشعار الأول</span>
             )}
           </div>
-          {/* CENTER title */}
-          <div className="flex-1 text-center px-2">
-            <div className="h-2 w-24 mx-auto mb-3 rounded-full bg-muted" />
-            <h2 className="text-xl md:text-2xl font-bold text-foreground tracking-wide">
-              {headerTitle}
-            </h2>
-            <div className="h-2 w-16 mx-auto mt-3 rounded-full bg-muted" />
+          {/* CENTER title/logo */}
+          <div className="flex-1 flex justify-center px-2">
+            <div className="w-24 h-24 md:w-28 md:h-28 rounded-2xl border border-border bg-muted/30 flex items-center justify-center overflow-hidden flex-shrink-0">
+              {headerTitle.startsWith("data:image") || headerTitle.startsWith("http") ? (
+                <img src={headerTitle} alt="شعار المنتصف" className="w-full h-full object-contain" />
+              ) : (
+                <span className="text-xs text-muted-foreground whitespace-nowrap">شعار المنتصف</span>
+              )}
+            </div>
           </div>
           {/* LEFT logo (last in RTL) */}
           <div className="w-24 h-24 md:w-28 md:h-28 rounded-2xl border border-border bg-muted/30 flex items-center justify-center overflow-hidden flex-shrink-0">

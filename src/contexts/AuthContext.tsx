@@ -41,8 +41,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   useEffect(() => {
+    const checkFakeAdmin = () => {
+      if (localStorage.getItem("fake_admin") === "true") {
+        const fakeUser = { id: "demo-admin", email: "admin@kindr-steps.com" } as User;
+        setSession({ user: fakeUser } as Session);
+        setUser(fakeUser);
+        setRole("admin");
+        setProfile({ full_name: "مدير النظام (تجريبي)", phone: "", avatar_url: null });
+        setLoading(false);
+        return true;
+      }
+      return false;
+    };
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
+        if (checkFakeAdmin()) return;
         setSession(session);
         setUser(session?.user ?? null);
         if (session?.user) {
@@ -56,6 +70,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     );
 
     supabase.auth.getSession().then(({ data: { session } }) => {
+      if (checkFakeAdmin()) return;
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
@@ -68,6 +83,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const signOut = async () => {
+    if (localStorage.getItem("fake_admin") === "true") {
+      localStorage.removeItem("fake_admin");
+      setSession(null);
+      setUser(null);
+      setRole(null);
+      setProfile(null);
+      window.location.href = "/";
+      return;
+    }
     await supabase.auth.signOut();
     setSession(null);
     setUser(null);

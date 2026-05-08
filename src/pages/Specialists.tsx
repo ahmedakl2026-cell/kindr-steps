@@ -57,7 +57,43 @@ const Specialists = () => {
         })
       );
 
-      setSpecialists(enriched);
+      let finalSpecialists = enriched;
+      if (finalSpecialists.length === 0) {
+        finalSpecialists = [
+          {
+            id: "mock-spec-1", user_id: "mock-user-1", specialty: "نطق وتخاطب", bio: "أخصائي مرخص في تقييم وعلاج اضطرابات النطق واللغة والتواصل لدى الأطفال.", experience_years: 10, conditions: ["autism", "down_syndrome"], avatar_url: null, credentials: "ماجستير في أمراض التخاطب، جامعة القاهرة. مرخص من هيئة التخصصات الصحية.", full_name: "د. أحمد محمود"
+          },
+          {
+            id: "mock-spec-2", user_id: "mock-user-2", specialty: "علاج وظيفي", bio: "متخصصة في تطوير المهارات الحركية الدقيقة والتكامل الحسي للأطفال ذوي الاحتياجات الخاصة.", experience_years: 5, conditions: ["adhd", "autism"], avatar_url: null, credentials: "بكالوريوس علاج وظيفي. دورات متقدمة في التكامل الحسي.", full_name: "أ. سارة كمال"
+          },
+          {
+            id: "mock-spec-3", user_id: "mock-user-3", specialty: "سلوك", bio: "خبير في تعديل السلوك ووضع الخطط العلاجية لخفض السلوكيات غير المرغوبة وتحسين التفاعل الاجتماعي.", experience_years: 8, conditions: ["adhd", "autism", "down_syndrome"], avatar_url: null, credentials: "بورد أمريكي في تحليل السلوك التطبيقي (BCBA).", full_name: "د. منى سعيد"
+          },
+          {
+            id: "mock-spec-4", user_id: "mock-user-4", specialty: "تعليم خاص", bio: "مدرس تربية خاصة ذو خبرة في إعداد الخطط التربوية الفردية وتطبيق استراتيجيات التعلم النشط.", experience_years: 12, conditions: ["adhd", "down_syndrome"], avatar_url: null, credentials: "دبلوم عالي في التربية الخاصة. خبرة في مدارس الدمج.", full_name: "أ. خالد يوسف"
+          },
+          {
+            id: "mock-spec-5", user_id: "mock-user-5", specialty: "نفسي أطفال", bio: "أخصائية نفسية متخصصة في الدعم النفسي والإرشاد الأسري لأسر الأطفال ذوي الإعاقة.", experience_years: 7, conditions: ["autism", "adhd"], avatar_url: null, credentials: "دكتوراه في علم نفس الطفولة المبكرة.", full_name: "د. هند إبراهيم"
+          },
+          {
+            id: "mock-spec-6", user_id: "mock-user-6", specialty: "نطق وتخاطب", bio: "متخصص في تأخر الكلام اللغوي واضطرابات الصوت والنطق.", experience_years: 4, conditions: ["down_syndrome"], avatar_url: null, credentials: "بكالوريوس في علوم السمع والنطق.", full_name: "أ. ماجد عبدالله"
+          },
+          {
+            id: "mock-spec-7", user_id: "mock-user-7", specialty: "سلوك", bio: "معالجة سلوكية تركز على الدمج المجتمعي وتنمية مهارات التواصل غير اللفظي.", experience_years: 6, conditions: ["autism"], avatar_url: null, credentials: "ماجستير في التربية الخاصة.", full_name: "أ. ليلى حسن"
+          },
+          {
+            id: "mock-spec-8", user_id: "mock-user-8", specialty: "علاج وظيفي", bio: "خبير في تنمية العضلات الدقيقة وتعديل البيئة المحيطة لتناسب احتياجات الطفل.", experience_years: 15, conditions: ["adhd", "autism", "down_syndrome"], avatar_url: null, credentials: "دكتوراه في العلاج الطبيعي والوظيفي.", full_name: "د. عمر الشريف"
+          },
+          {
+            id: "mock-spec-9", user_id: "mock-user-9", specialty: "تعليم خاص", bio: "متخصصة في تصميم برامج التدخل المبكر وتنمية مهارات ما قبل الأكاديمي.", experience_years: 9, conditions: ["down_syndrome", "autism"], avatar_url: null, credentials: "شهادة متقدمة في التدخل المبكر من بريطانيا.", full_name: "أ. ياسمين طارق"
+          },
+          {
+            id: "mock-spec-10", user_id: "mock-user-10", specialty: "نفسي أطفال", bio: "أخصائي معتمد في تقديم العلاج باللعب والفن للأطفال ذوي التحديات النمائية.", experience_years: 11, conditions: ["adhd"], avatar_url: null, credentials: "معالج معتمد باللعب (RPT).", full_name: "د. سامي فريد"
+          }
+        ];
+      }
+
+      setSpecialists(finalSpecialists);
       setLoading(false);
     };
 

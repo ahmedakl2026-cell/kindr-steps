@@ -68,7 +68,19 @@ const Messages = () => {
       .order("updated_at", { ascending: false });
 
     if (!convos || convos.length === 0) {
-      setConversations([]);
+      const mockConvos = [
+        { id: "mock-conversation-1", parent_id: user.id, specialist_id: "mock-spec-1", updated_at: new Date().toISOString(), other_name: "د. أحمد محمود", other_role: "متخصص", last_message: "أهلاً بك، كيف يمكنني مساعدتك اليوم بخصوص تطور نطق يوسف؟", unread_count: 1 },
+        { id: "mock-conversation-2", parent_id: user.id, specialist_id: "mock-spec-2", updated_at: new Date(Date.now() - 3600000).toISOString(), other_name: "أ. سارة كمال", other_role: "متخصص", last_message: "ممتاز! استمري على نفس التمارين يومياً.", unread_count: 0 },
+        { id: "mock-conversation-3", parent_id: user.id, specialist_id: "mock-spec-3", updated_at: new Date(Date.now() - 7200000).toISOString(), other_name: "د. منى سعيد", other_role: "متخصص", last_message: "هل لاحظت أي تغير في سلوكه عند تغيير الروتين؟", unread_count: 2 },
+        { id: "mock-conversation-4", parent_id: user.id, specialist_id: "mock-spec-4", updated_at: new Date(Date.now() - 86400000).toISOString(), other_name: "أ. خالد يوسف", other_role: "متخصص", last_message: "أرسلت لك الخطة التربوية الفردية على الإيميل.", unread_count: 0 },
+        { id: "mock-conversation-5", parent_id: user.id, specialist_id: "mock-spec-5", updated_at: new Date(Date.now() - 172800000).toISOString(), other_name: "د. هند إبراهيم", other_role: "متخصص", last_message: "لا تترددي في حجز جلسة إرشادية متى ما شعرتِ بالضغط.", unread_count: 0 },
+        { id: "mock-conversation-6", parent_id: user.id, specialist_id: "mock-spec-6", updated_at: new Date(Date.now() - 259200000).toISOString(), other_name: "أ. ماجد عبدالله", other_role: "متخصص", last_message: "تدريبات النفخ جيدة، جربي استخدام الفقاعات.", unread_count: 0 },
+        { id: "mock-conversation-7", parent_id: user.id, specialist_id: "mock-spec-7", updated_at: new Date(Date.now() - 345600000).toISOString(), other_name: "أ. ليلى حسن", other_role: "متخصص", last_message: "بانتظار رؤيتكم في الجلسة القادمة غداً.", unread_count: 0 },
+        { id: "mock-conversation-8", parent_id: user.id, specialist_id: "mock-spec-8", updated_at: new Date(Date.now() - 432000000).toISOString(), other_name: "د. عمر الشريف", other_role: "متخصص", last_message: "استخدام المعجون الطبي سيفيد كثيراً في تقوية العضلات الدقيقة.", unread_count: 1 },
+        { id: "mock-conversation-9", parent_id: user.id, specialist_id: "mock-spec-9", updated_at: new Date(Date.now() - 518400000).toISOString(), other_name: "أ. ياسمين طارق", other_role: "متخصص", last_message: "شكراً لالتزامكم بالأنشطة المنزلية، النتيجة واضحة.", unread_count: 0 },
+        { id: "mock-conversation-10", parent_id: user.id, specialist_id: "mock-spec-10", updated_at: new Date(Date.now() - 604800000).toISOString(), other_name: "د. سامي فريد", other_role: "متخصص", last_message: "كيف كان تفاعله مع الألوان المائية اليوم؟", unread_count: 0 }
+      ];
+      setConversations(mockConvos);
       setLoading(false);
       return;
     }
@@ -156,6 +168,29 @@ const Messages = () => {
   };
 
   const loadMessages = async (conversationId: string) => {
+    if (conversationId === "mock-conversation-1") {
+      setMessages([
+        {
+          id: "mock-msg-1",
+          conversation_id: "mock-conversation-1",
+          sender_id: user?.id || "",
+          content: "السلام عليكم دكتور أحمد، أردت الاستفسار عن تطور حالة يوسف",
+          is_read: true,
+          created_at: new Date(Date.now() - 3600000).toISOString() // 1 hour ago
+        },
+        {
+          id: "mock-msg-2",
+          conversation_id: "mock-conversation-1",
+          sender_id: "mock-spec-1",
+          content: "أهلاً بك، كيف يمكنني مساعدتك اليوم بخصوص تطور نطق يوسف؟",
+          is_read: false,
+          created_at: new Date(Date.now() - 1800000).toISOString() // 30 mins ago
+        }
+      ]);
+      setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
+      return;
+    }
+
     const { data } = await supabase
       .from("messages")
       .select("*")
