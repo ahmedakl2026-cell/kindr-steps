@@ -107,10 +107,58 @@ const testimonials = [
   },
 ];
 
-const Index = () => (
+const Index = () => {
+  const [logoRight, setLogoRight] = useState<string>("");
+  const [logoLeft, setLogoLeft] = useState<string>("");
+  const [headerTitle, setHeaderTitle] = useState<string>("منصة خطوة");
+
+  useEffect(() => {
+    supabase
+      .from("site_settings")
+      .select("key, value")
+      .in("key", ["header_logo_right", "header_logo_left", "header_title"])
+      .then(({ data }) => {
+        (data || []).forEach((row: any) => {
+          if (row.key === "header_logo_right") setLogoRight(row.value || "");
+          if (row.key === "header_logo_left") setLogoLeft(row.value || "");
+          if (row.key === "header_title" && row.value) setHeaderTitle(row.value);
+        });
+      });
+  }, []);
+
+  return (
   <Layout>
-    {/* Header with 3 logo placeholders */}
-    <header className="container mx-auto px-4 pt-8">
+    {/* Header with 3 logo placeholders — dynamic, RTL: right, center, left */}
+    <header className="container mx-auto px-4 pt-8" dir="rtl">
+      <div className="max-w-6xl mx-auto bg-card border border-border rounded-3xl px-6 py-6 md:px-10 md:py-7 shadow-sm">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-4">
+          {/* RIGHT logo (first in RTL) */}
+          <div className="w-24 h-24 md:w-28 md:h-28 rounded-2xl border border-border bg-muted/30 flex items-center justify-center overflow-hidden flex-shrink-0">
+            {logoRight ? (
+              <img src={logoRight} alt="الشعار الأول" className="w-full h-full object-contain" />
+            ) : (
+              <span className="text-xs text-muted-foreground">الشعار الأول</span>
+            )}
+          </div>
+          {/* CENTER title */}
+          <div className="flex-1 text-center px-2">
+            <div className="h-2 w-24 mx-auto mb-3 rounded-full bg-muted" />
+            <h2 className="text-xl md:text-2xl font-bold text-foreground tracking-wide">
+              {headerTitle}
+            </h2>
+            <div className="h-2 w-16 mx-auto mt-3 rounded-full bg-muted" />
+          </div>
+          {/* LEFT logo (last in RTL) */}
+          <div className="w-24 h-24 md:w-28 md:h-28 rounded-2xl border border-border bg-muted/30 flex items-center justify-center overflow-hidden flex-shrink-0">
+            {logoLeft ? (
+              <img src={logoLeft} alt="الشعار الثاني" className="w-full h-full object-contain" />
+            ) : (
+              <span className="text-xs text-muted-foreground">الشعار الثاني</span>
+            )}
+          </div>
+        </div>
+      </div>
+    </header>
       <div className="max-w-6xl mx-auto bg-card border border-border rounded-3xl px-6 py-6 md:px-10 md:py-7 shadow-sm">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-4">
           <div className="w-24 h-24 md:w-28 md:h-28 rounded-2xl border-2 border-dashed border-border bg-muted/30 flex items-center justify-center text-xs text-muted-foreground flex-shrink-0">
