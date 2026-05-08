@@ -125,6 +125,14 @@ const Navbar = () => {
               {link.label}
             </Link>
           ))}
+          {user && role === "admin" && (
+            <Link to="/admin" onClick={() => setIsOpen(false)}>
+              <Button className="w-full rounded-xl gap-2 bg-primary text-primary-foreground hover:bg-primary/90">
+                <Settings className="w-4 h-4" />
+                لوحة التحكم
+              </Button>
+            </Link>
+          )}
           <div className="flex items-center gap-2 mt-2">
             <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-xl">
               {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
