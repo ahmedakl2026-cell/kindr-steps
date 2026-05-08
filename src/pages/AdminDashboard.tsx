@@ -276,9 +276,12 @@ const AdminDashboard = () => {
         </div>
 
         <Tabs defaultValue="specialists" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 rounded-xl">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 rounded-xl h-auto">
             <TabsTrigger value="specialists" className="rounded-xl">طلبات المتخصصين</TabsTrigger>
             <TabsTrigger value="invitations" className="rounded-xl">الدعوات</TabsTrigger>
+            <TabsTrigger value="media" className="rounded-xl gap-1">
+              <ImageIcon className="w-4 h-4" /> إدارة الصور
+            </TabsTrigger>
             <TabsTrigger value="profile" className="rounded-xl">ملفي الشخصي</TabsTrigger>
           </TabsList>
 
