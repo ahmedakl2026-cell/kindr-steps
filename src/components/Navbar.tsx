@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, X, Star, Moon, Sun, LogOut } from "lucide-react";
+import { Menu, X, Star, Moon, Sun, LogOut, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -12,7 +12,6 @@ const navLinks = [
   { label: "لوحة الأهل", path: "/parent-dashboard", requireAuth: true },
   { label: "مجتمع الدعم", path: "/community", requireAuth: true },
   { label: "الرسائل", path: "/messages", requireAuth: true },
-  { label: "لوحة الإدارة", path: "/admin", requireAuth: true, requireRole: "admin" as const },
   { label: "فريق العمل", path: "/team" },
 ];
 
@@ -82,6 +81,14 @@ const Navbar = () => {
           </Button>
           {user ? (
             <div className="flex items-center gap-2">
+              {role === "admin" && (
+                <Link to="/admin">
+                  <Button className="rounded-xl gap-2 bg-primary text-primary-foreground hover:bg-primary/90 shadow-md">
+                    <Settings className="w-4 h-4" />
+                    لوحة التحكم
+                  </Button>
+                </Link>
+              )}
               <span className="text-sm font-medium text-muted-foreground">{profile?.full_name}</span>
               <Button variant="outline" className="rounded-xl gap-2" onClick={handleSignOut}>
                 <LogOut className="w-4 h-4" />
@@ -118,6 +125,14 @@ const Navbar = () => {
               {link.label}
             </Link>
           ))}
+          {user && role === "admin" && (
+            <Link to="/admin" onClick={() => setIsOpen(false)}>
+              <Button className="w-full rounded-xl gap-2 bg-primary text-primary-foreground hover:bg-primary/90">
+                <Settings className="w-4 h-4" />
+                لوحة التحكم
+              </Button>
+            </Link>
+          )}
           <div className="flex items-center gap-2 mt-2">
             <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-xl">
               {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
