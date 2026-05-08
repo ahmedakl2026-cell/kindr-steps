@@ -174,10 +174,79 @@ const Library = () => {
             ) : (
               <TimelineLayout sections={selected.sections} />
             )}
+
+            {/* Activities for this disability */}
+            <DisabilityActivities disabilityId={selected.id} accentColor={selected.color} />
           </div>
         )}
       </div>
     </Layout>
+  );
+};
+
+/* Per-disability activities area: read-only for everyone, manageable by admin */
+const DisabilityActivities = ({ disabilityId, accentColor }: { disabilityId: string; accentColor: string }) => {
+  const { role } = useAuth();
+  const [items, setItems] = useState<{ id: string; title: string; description: string | null; image_url: string }[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchItems = async () => {
+    setLoading(true);
+    const { data } = await supabase
+      .from("kids_activities")
+      .select("id, title, description, image_url")
+      .eq("disability", disabilityId)
+      .order("created_at", { ascending: false });
+    setItems(data || []);
+    setLoading(false);
+  };
+
+  useEffect(() => { fetchItems(); }, [disabilityId]);
+
+  return (
+    <section className="mt-12">
+      <div className={`p-6 md:p-8 rounded-3xl ${accentColor} border border-border`}>
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-12 h-12 rounded-2xl bg-card flex items-center justify-center">
+            <Images className="w-6 h-6 text-primary" />
+          </div>
+          <div>
+            <h3 className="text-2xl font-extrabold">الأنشطة الخاصة</h3>
+            <p className="text-sm text-muted-foreground">صور وأنشطة مقترحة لهذه الفئة</p>
+          </div>
+        </div>
+
+        {role === "admin" ? (
+          <div className="bg-card rounded-2xl p-4 md:p-6">
+            <ActivityManager
+              disability={disabilityId}
+              title="إدارة أنشطة هذه الإعاقة"
+              emptyHint="لم تتم إضافة أنشطة بعد. اضغط على زر إضافة صورة."
+            />
+          </div>
+        ) : loading ? (
+          <p className="text-muted-foreground text-center py-6">جاري التحميل...</p>
+        ) : items.length === 0 ? (
+          <p className="text-muted-foreground text-center py-6">لا توجد أنشطة بعد</p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {items.map((a) => (
+              <div key={a.id} className="rounded-2xl overflow-hidden bg-card border border-border card-hover group">
+                <div className="overflow-hidden">
+                  <img src={a.image_url} alt={a.title} className="w-full h-44 object-cover group-hover:scale-110 transition-transform duration-500" />
+                </div>
+                <div className="p-4">
+                  <h4 className="font-bold mb-1">{a.title}</h4>
+                  {a.description && (
+                    <p className="text-sm text-muted-foreground leading-relaxed">{a.description}</p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
   );
 };
 
